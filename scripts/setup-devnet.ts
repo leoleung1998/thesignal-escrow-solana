@@ -148,7 +148,25 @@ async function main() {
 
   console.log("  Minted 500,000 vUSDC to admin");
 
-  // --- Step 4: Register KYC for all wallets ---
+  // --- Step 4: Initialize KYC Admin + Register KYC ---
+  console.log("\n--- Initializing KYC Admin ---");
+
+  const [kycAdminPDA] = PublicKey.findProgramAddressSync(
+    [Buffer.from("kyc_admin")],
+    kycProgram.programId
+  );
+
+  await kycProgram.methods
+    .initializeKycAdmin()
+    .accounts({
+      admin: admin.publicKey,
+      config: kycAdminPDA,
+      systemProgram: SystemProgram.programId,
+    })
+    .rpc();
+
+  console.log("KYC Admin Config:", kycAdminPDA.toBase58());
+
   console.log("\n--- Registering KYC ---");
 
   const oneYearFromNow = Math.floor(Date.now() / 1000) + 365 * 24 * 60 * 60;
@@ -175,6 +193,7 @@ async function main() {
       )
       .accounts({
         admin: admin.publicKey,
+        config: kycAdminPDA,
         kycStatus: kycPDA,
         systemProgram: SystemProgram.programId,
       })

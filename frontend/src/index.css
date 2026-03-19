@@ -10,11 +10,23 @@
   --animate-fade-in: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   --animate-fade-in-up: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   --animate-shimmer: shimmer 2s infinite;
+  --animate-slide-down: slideDown 2s ease-in-out infinite;
   --animate-marquee: marquee 120s linear infinite;
+  --animate-radar: radar 3s linear infinite;
+  --animate-pulse-ring: pulse-ring 2s ease-in-out infinite;
 
   @keyframes marquee {
     0% { transform: translateX(0%); }
     100% { transform: translateX(-50%); }
+  }
+  @keyframes radar {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  @keyframes pulse-ring {
+    0% { box-shadow: 0 0 0 0 rgba(74,222,128,0.5); }
+    70% { box-shadow: 0 0 0 12px rgba(74,222,128,0); }
+    100% { box-shadow: 0 0 0 0 rgba(74,222,128,0); }
   }
   @keyframes spin-slow {
     100% { transform: rotate(360deg); }
@@ -33,6 +45,12 @@
   }
   @keyframes shimmer {
     100% { transform: translateX(100%); }
+  }
+  @keyframes slideDown {
+    0% { top: -10px; opacity: 0; }
+    20% { opacity: 1; }
+    80% { opacity: 1; }
+    100% { top: 100%; opacity: 0; }
   }
   @keyframes glitch-anim-1 {
     0%, 100% { clip-path: inset(50% 0 30% 0); transform: translate(0); opacity: 0; }
@@ -111,5 +129,37 @@
     text-shadow: -2px 0 rgba(0, 255, 255, 0.8), 1px 0 rgba(74, 222, 128, 0.8);
     mix-blend-mode: screen;
     animation: glitch-anim-2 5s infinite linear alternate;
+  }
+
+  .glitch-wrapper:hover .glitch-text {
+    animation-duration: 2s;
+    text-shadow: 2px 0 0 rgba(16, 185, 129, 0.4), -2px 0 0 rgba(0, 255, 255, 0.4);
+  }
+
+  .glitch-wrapper:hover .glitch-text::before,
+  .glitch-wrapper:hover .glitch-text::after {
+    animation-duration: 2s;
+  }
+
+  /* Override wallet adapter button styles to match our theme */
+  .wallet-adapter-button {
+    background-color: #10b981 !important;
+    color: #02040a !important;
+    font-weight: 700 !important;
+    border-radius: 0.75rem !important;
+    font-size: 0.75rem !important;
+    height: auto !important;
+    padding: 0.625rem 1.25rem !important;
+  }
+  .wallet-adapter-button:hover {
+    background-color: #34d399 !important;
+  }
+  .wallet-adapter-modal-wrapper {
+    background-color: #09090b !important;
+    border: 1px solid #27272a !important;
+    border-radius: 1.5rem !important;
+  }
+  .wallet-adapter-modal-title {
+    color: #e4e4e7 !important;
   }
 }

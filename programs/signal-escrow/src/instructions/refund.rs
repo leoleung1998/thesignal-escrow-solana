@@ -1,5 +1,5 @@
 use anchor_lang::prelude::*;
-use anchor_spl::token_interface::{self, Mint, TokenAccount, TokenInterface, TransferChecked};
+use anchor_spl::token::{self, Mint, Token, TokenAccount, TransferChecked};
 use crate::state::*;
 use crate::errors::SignalEscrowError;
 use crate::events::DealRefunded;
@@ -29,16 +29,16 @@ pub struct Refund<'info> {
         seeds = [b"vault", deal_id.to_le_bytes().as_ref()],
         bump = deal.vault_bump
     )]
-    pub vault: InterfaceAccount<'info, TokenAccount>,
+    pub vault: Account<'info, TokenAccount>,
 
     /// Client's token account for full refund
     #[account(mut, token::mint = deal.token_mint)]
-    pub client_token_account: InterfaceAccount<'info, TokenAccount>,
+    pub client_token_account: Account<'info, TokenAccount>,
 
     #[account(address = deal.token_mint)]
-    pub token_mint: InterfaceAccount<'info, Mint>,
+    pub token_mint: Account<'info, Mint>,
 
-    pub token_program: Interface<'info, TokenInterface>,
+    pub token_program: Program<'info, Token>,
 }
 
 pub fn handler(ctx: Context<Refund>, deal_id: u64) -> Result<()> {
@@ -51,7 +51,15 @@ pub fn handler(ctx: Context<Refund>, deal_id: u64) -> Result<()> {
 
     let decimals = ctx.accounts.token_mint.decimals;
     let deal_id_bytes = deal_id.to_le_bytes();
-    let signer_seeds: &[&[&[u8]]] = &[&[b"deal", deal_id_bytes.as_ref(), &[deal.bump]]];
+    let bump = deal.bump;
+    let signer_seeds: &[&[&[u8]]] = &[&[b"deal", deal_id_bytes.as_ref(), &[bump]]];
+
+    // Extract account infos before mutable iteration to satisfy borrow checker
+    let deal_account_info = deal.to_account_info();
+    let vault_info = ctx.accounts.vault.to_account_info();
+    let mint_info = ctx.accounts.token_mint.to_account_info();
+    let client_info = ctx.accounts.client_token_account.to_account_info();
+    let token_program_info = ctx.accounts.token_program.to_account_info();
 
     let mut total_refunded: u64 = 0;
 
@@ -59,14 +67,14 @@ pub fn handler(ctx: Context<Refund>, deal_id: u64) -> Result<()> {
         if milestone.status == MilestoneStatus::Funded
             || milestone.status == MilestoneStatus::Disputed
         {
-            token_interface::transfer_checked(
+            token::transfer_checked(
                 CpiContext::new_with_signer(
-                    ctx.accounts.token_program.to_account_info(),
+                    token_program_info.clone(),
                     TransferChecked {
-                        from: ctx.accounts.vault.to_account_info(),
-                        mint: ctx.accounts.token_mint.to_account_info(),
-                        to: ctx.accounts.client_token_account.to_account_info(),
-                        authority: deal.to_account_info(),
+                        from: vault_info.clone(),
+                        mint: mint_info.clone(),
+                        to: client_info.clone(),
+                        authority: deal_account_info.clone(),
                     },
                     signer_seeds,
                 ),
@@ -74,7 +82,9 @@ pub fn handler(ctx: Context<Refund>, deal_id: u64) -> Result<()> {
                 decimals,
             )?;
 
-            total_refunded = total_refunded.checked_add(milestone.amount).unwrap();
+            total_refunded = total_refunded
+                .checked_add(milestone.amount)
+                .ok_or(SignalEscrowError::Overflow)?;
             milestone.status = MilestoneStatus::Refunded;
         }
     }

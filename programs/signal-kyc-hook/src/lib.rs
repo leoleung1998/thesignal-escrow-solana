@@ -1,16 +1,22 @@
 use anchor_lang::prelude::*;
 use spl_transfer_hook_interface::instruction::TransferHookInstruction;
 
+pub mod errors;
 pub mod instructions;
 pub mod state;
 
 use instructions::*;
 
-declare_id!("KycH1bMhpQRXmGCG6Lgr2bPBi8S42FX1DPYjgPqz7hK4");
+declare_id!("5zyZimCxauJ4SsiAkB5PVBTevyLnznRfdoqJs1odjNSN");
 
 #[program]
 pub mod signal_kyc_hook {
     use super::*;
+
+    /// Initialize the KYC admin config
+    pub fn initialize_kyc_admin(ctx: Context<InitializeKycAdmin>) -> Result<()> {
+        instructions::initialize::handler(ctx)
+    }
 
     /// Initialize ExtraAccountMetaList for a token mint
     pub fn initialize_extra_account_meta_list(

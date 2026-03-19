@@ -1,18 +1,20 @@
+[toolchain]
+
 [features]
-seeds = false
+resolution = true
 skip-lint = false
 
 [programs.devnet]
-signal_escrow = "EscW1bMhpQRXmGCG6Lgr2bPBi8S42FX1DPYjgPqz6hK3"
-signal_kyc_hook = "KycH1bMhpQRXmGCG6Lgr2bPBi8S42FX1DPYjgPqz7hK4"
+signal_escrow = "DdfRLgw8YFB8ao4YaKpPfdorEPW1EhoE1gE3FYzdhNnu"
+signal_kyc_hook = "5zyZimCxauJ4SsiAkB5PVBTevyLnznRfdoqJs1odjNSN"
 
 [registry]
 url = "https://api.apr.dev"
 
 [provider]
-cluster = "devnet"
+cluster = "Devnet"
 wallet = "~/.config/solana/id.json"
 
 [scripts]
-test = "npx ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.ts"
 setup = "npx ts-node scripts/setup-devnet.ts"
+test = "npx ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.ts"

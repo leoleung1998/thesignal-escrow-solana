@@ -95,31 +95,49 @@ All milestones released → Deal completed → Provider reputation++
 | Wallet | @solana/wallet-adapter (Phantom, Solflare) |
 | Network | Solana Devnet |
 
+## Deployed Program IDs
+
+| Program | Address |
+|---------|---------|
+| `signal-escrow` | `DdfRLgw8YFB8ao4YaKpPfdorEPW1EhoE1gE3FYzdhNnu` |
+| `signal-kyc-hook` | `5zyZimCxauJ4SsiAkB5PVBTevyLnznRfdoqJs1odjNSN` |
+
 ## Quick Start
 
 ### Prerequisites
-- [Rust](https://rustup.rs/) (1.75+)
-- [Solana CLI](https://docs.solana.com/cli/install-solana-cli-tools) (1.18+)
-- [Anchor CLI](https://www.anchor-lang.com/docs/installation) (0.30+)
+- [Rust](https://rustup.rs/) (stable)
+- [Solana CLI](https://docs.solana.com/cli/install-solana-cli-tools) (2.1+)
+- [Anchor CLI](https://www.anchor-lang.com/docs/installation) (0.30.1)
 - Node.js 18+
 
-### Build & Test
+### Build Programs
 
 ```bash
 # Install dependencies
 npm install
 
-# Build Anchor programs
-anchor build
+# Build both Solana programs (SBF target)
+cargo build-sbf --manifest-path programs/signal-escrow/Cargo.toml
+cargo build-sbf --manifest-path programs/signal-kyc-hook/Cargo.toml
+```
 
-# Run tests (starts local validator)
-anchor test
+> **Note**: `anchor build` IDL generation requires a specific Rust toolchain version.
+> The IDL files in `frontend/src/idl/` are pre-generated and kept in sync manually.
 
-# Deploy to devnet
-solana config set --url devnet
-anchor deploy
+### Deploy (Local Validator)
 
-# Setup demo environment (create mint, KYC, etc.)
+```bash
+# Start local validator
+solana-test-validator --reset --quiet &
+
+# Configure CLI for localhost
+solana config set --url http://localhost:8899
+
+# Deploy both programs
+solana program deploy target/deploy/signal_escrow.so --program-id target/deploy/signal_escrow-keypair.json
+solana program deploy target/deploy/signal_kyc_hook.so --program-id target/deploy/signal_kyc_hook-keypair.json
+
+# Run setup script (creates vUSDC mint, KYC records, demo data)
 npm run setup
 ```
 
@@ -129,14 +147,10 @@ npm run setup
 cd frontend
 npm install
 
-# Copy generated IDLs
-cp ../target/idl/signal_escrow.json src/idl/
-cp ../target/idl/signal_kyc_hook.json src/idl/
-
-# Set environment variables
+# Configure environment (defaults point to localhost:8899)
 cp .env.example .env
-# Edit .env with deployed program IDs and mint address
 
+# Start dev server
 npm run dev
 ```
 

@@ -3,8 +3,13 @@ node_modules/
 dist/
 .anchor/
 .DS_Store
+Thumbs.db
 *.env
 !.env.example
 frontend/node_modules/
 frontend/dist/
 test-ledger/
+*.so
+*.tsbuildinfo
+nul
+package-lock.json

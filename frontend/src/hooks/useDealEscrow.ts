@@ -4,7 +4,6 @@ import { Program, AnchorProvider, BN } from '@coral-xyz/anchor';
 import { PublicKey, SystemProgram } from '@solana/web3.js';
 import { TOKEN_2022_PROGRAM_ID, getAssociatedTokenAddressSync } from '@solana/spl-token';
 import {
-  ESCROW_PROGRAM_ID,
   VUSDC_MINT,
   getConfigPDA,
   getDealPDA,
@@ -12,9 +11,7 @@ import {
   getReputationPDA,
 } from '../lib/solana';
 
-// IDL will be loaded from the generated JSON after anchor build
-// For now, we define the types inline
-import type { SignalEscrow } from '../idl/signal_escrow';
+// IDL loaded from generated JSON (placeholder until anchor build)
 import idl from '../idl/signal_escrow.json';
 
 export interface DealData {
@@ -59,12 +56,12 @@ export function useDealEscrow() {
   const { connection } = useConnection();
   const [isProcessing, setIsProcessing] = useState(false);
 
-  const getProgram = useCallback(() => {
+  const getProgram = useCallback((): any => {
     if (!wallet) throw new Error('Wallet not connected');
     const provider = new AnchorProvider(connection, wallet, {
       commitment: 'confirmed',
     });
-    return new Program(idl as any, ESCROW_PROGRAM_ID, provider) as unknown as Program<SignalEscrow>;
+    return new Program(idl as any, provider);
   }, [wallet, connection]);
 
   // --- Read Methods ---

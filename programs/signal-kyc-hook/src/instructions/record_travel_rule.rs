@@ -1,11 +1,19 @@
 use anchor_lang::prelude::*;
-use crate::state::TravelRuleRecord;
+use crate::state::{TravelRuleRecord, KycAdminConfig};
+use crate::errors::KycHookError;
 
 #[derive(Accounts)]
 #[instruction(deal_id: u64)]
 pub struct RecordTravelRule<'info> {
     #[account(mut)]
     pub admin: Signer<'info>,
+
+    #[account(
+        seeds = [b"kyc_admin"],
+        bump = config.bump,
+        constraint = config.admin == admin.key() @ KycHookError::AdminOnly
+    )]
+    pub config: Account<'info, KycAdminConfig>,
 
     #[account(
         init,

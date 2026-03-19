@@ -1,5 +1,5 @@
 use anchor_lang::prelude::*;
-use anchor_spl::token_interface::{Mint, TokenAccount, TokenInterface};
+use anchor_spl::token::{Mint, Token, TokenAccount};
 use crate::state::*;
 use crate::errors::SignalEscrowError;
 use crate::events::DealCreated;
@@ -36,14 +36,13 @@ pub struct CreateDeal<'info> {
         payer = client,
         token::mint = token_mint,
         token::authority = deal,
-        token::token_program = token_program,
         seeds = [b"vault", config.deal_count.to_le_bytes().as_ref()],
         bump
     )]
-    pub vault: InterfaceAccount<'info, TokenAccount>,
+    pub vault: Account<'info, TokenAccount>,
 
-    pub token_mint: InterfaceAccount<'info, Mint>,
-    pub token_program: Interface<'info, TokenInterface>,
+    pub token_mint: Account<'info, Mint>,
+    pub token_program: Program<'info, Token>,
     pub system_program: Program<'info, System>,
 }
 
@@ -94,7 +93,9 @@ pub fn handler(
     deal.vault_bump = ctx.bumps.vault;
     deal.milestones = milestones;
 
-    config.deal_count = config.deal_count.checked_add(1).unwrap();
+    config.deal_count = config.deal_count
+        .checked_add(1)
+        .ok_or(SignalEscrowError::Overflow)?;
 
     emit!(DealCreated {
         deal_id,

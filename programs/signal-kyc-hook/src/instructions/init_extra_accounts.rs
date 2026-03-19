@@ -1,6 +1,7 @@
 use anchor_lang::prelude::*;
 use anchor_lang::system_program;
-use anchor_spl::token_interface::Mint;
+use anchor_lang::solana_program::program_error::ProgramError;
+use anchor_spl::token::Mint;
 use spl_tlv_account_resolution::{account::ExtraAccountMeta, seeds::Seed, state::ExtraAccountMetaList};
 use spl_transfer_hook_interface::instruction::ExecuteInstruction;
 
@@ -19,7 +20,7 @@ pub struct InitializeExtraAccountMetaList<'info> {
     )]
     pub extra_account_meta_list: UncheckedAccount<'info>,
 
-    pub mint: InterfaceAccount<'info, Mint>,
+    pub mint: Account<'info, Mint>,
     pub system_program: Program<'info, System>,
 }
 
@@ -38,7 +39,7 @@ pub fn handler(ctx: Context<InitializeExtraAccountMetaList>) -> Result<()> {
             false, // is_signer
             false, // is_writable
         )
-        .unwrap(),
+        .map_err(|_| ProgramError::InvalidSeeds)?,
         // Extra account 1: Receiver's KYC status PDA
         // Derived from: ["kyc", destination_token_account.owner]
         // We need to read the owner from the destination token account data
@@ -56,11 +57,12 @@ pub fn handler(ctx: Context<InitializeExtraAccountMetaList>) -> Result<()> {
             false,
             false,
         )
-        .unwrap(),
+        .map_err(|_| ProgramError::InvalidSeeds)?,
     ];
 
     // Calculate account size needed
-    let account_size = ExtraAccountMetaList::size_of(extra_account_metas.len()).unwrap();
+    let account_size = ExtraAccountMetaList::size_of(extra_account_metas.len())
+        .map_err(|_| ProgramError::InvalidAccountData)?;
     let lamports = Rent::get()?.minimum_balance(account_size);
 
     let mint_key = ctx.accounts.mint.key();

@@ -1,5 +1,5 @@
 use anchor_lang::prelude::*;
-use anchor_spl::token_interface::{self, Mint, TokenAccount, TokenInterface, TransferChecked};
+use anchor_spl::token::{self, Mint, Token, TokenAccount, TransferChecked};
 use crate::state::*;
 use crate::errors::SignalEscrowError;
 use crate::events::{MilestoneReleased, DealCompleted};
@@ -24,24 +24,24 @@ pub struct ReleaseMilestone<'info> {
         seeds = [b"vault", deal_id.to_le_bytes().as_ref()],
         bump = deal.vault_bump
     )]
-    pub vault: InterfaceAccount<'info, TokenAccount>,
+    pub vault: Account<'info, TokenAccount>,
 
     /// Provider's token account to receive payment
     #[account(mut, token::mint = deal.token_mint)]
-    pub provider_token_account: InterfaceAccount<'info, TokenAccount>,
+    pub provider_token_account: Account<'info, TokenAccount>,
 
     /// Connector's token account to receive commission
     #[account(mut, token::mint = deal.token_mint)]
-    pub connector_token_account: InterfaceAccount<'info, TokenAccount>,
+    pub connector_token_account: Account<'info, TokenAccount>,
 
     /// Protocol wallet's token account to receive fees
     #[account(mut, token::mint = deal.token_mint)]
-    pub protocol_token_account: InterfaceAccount<'info, TokenAccount>,
+    pub protocol_token_account: Account<'info, TokenAccount>,
 
     #[account(address = deal.token_mint)]
-    pub token_mint: InterfaceAccount<'info, Mint>,
+    pub token_mint: Account<'info, Mint>,
 
-    pub token_program: Interface<'info, TokenInterface>,
+    pub token_program: Program<'info, Token>,
 
     /// Reputation PDA — init_if_needed for first completed deal
     #[account(
@@ -94,7 +94,7 @@ pub fn handler(ctx: Context<ReleaseMilestone>, deal_id: u64, milestone_idx: u8) 
 
     // CPI 1: Transfer to provider
     if provider_cut > 0 {
-        token_interface::transfer_checked(
+        token::transfer_checked(
             CpiContext::new_with_signer(
                 ctx.accounts.token_program.to_account_info(),
                 TransferChecked {
@@ -112,7 +112,7 @@ pub fn handler(ctx: Context<ReleaseMilestone>, deal_id: u64, milestone_idx: u8) 
 
     // CPI 2: Transfer to connector (BD commission)
     if connector_cut > 0 {
-        token_interface::transfer_checked(
+        token::transfer_checked(
             CpiContext::new_with_signer(
                 ctx.accounts.token_program.to_account_info(),
                 TransferChecked {
@@ -130,7 +130,7 @@ pub fn handler(ctx: Context<ReleaseMilestone>, deal_id: u64, milestone_idx: u8) 
 
     // CPI 3: Transfer to protocol wallet
     if protocol_cut > 0 {
-        token_interface::transfer_checked(
+        token::transfer_checked(
             CpiContext::new_with_signer(
                 ctx.accounts.token_program.to_account_info(),
                 TransferChecked {
@@ -167,7 +167,9 @@ pub fn handler(ctx: Context<ReleaseMilestone>, deal_id: u64, milestone_idx: u8) 
             reputation.provider = deal.provider;
             reputation.bump = ctx.bumps.reputation;
         }
-        reputation.completed_deals = reputation.completed_deals.checked_add(1).unwrap();
+        reputation.completed_deals = reputation.completed_deals
+            .checked_add(1)
+            .ok_or(SignalEscrowError::Overflow)?;
 
         emit!(DealCompleted {
             deal_id: deal.deal_id,

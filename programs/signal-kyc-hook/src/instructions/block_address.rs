@@ -1,11 +1,19 @@
 use anchor_lang::prelude::*;
-use crate::state::KycStatus;
+use crate::state::{KycStatus, KycAdminConfig};
+use crate::errors::KycHookError;
 
 #[derive(Accounts)]
 #[instruction(wallet: Pubkey)]
 pub struct BlockAddress<'info> {
     #[account(mut)]
     pub admin: Signer<'info>,
+
+    #[account(
+        seeds = [b"kyc_admin"],
+        bump = config.bump,
+        constraint = config.admin == admin.key() @ KycHookError::AdminOnly
+    )]
+    pub config: Account<'info, KycAdminConfig>,
 
     #[account(
         mut,

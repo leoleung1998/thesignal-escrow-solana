@@ -1,11 +1,19 @@
 use anchor_lang::prelude::*;
-use crate::state::KycStatus;
+use crate::state::{KycStatus, KycAdminConfig};
+use crate::errors::KycHookError;
 
 #[derive(Accounts)]
 #[instruction(wallet: Pubkey)]
 pub struct RegisterKyc<'info> {
     #[account(mut)]
     pub admin: Signer<'info>,
+
+    #[account(
+        seeds = [b"kyc_admin"],
+        bump = config.bump,
+        constraint = config.admin == admin.key() @ KycHookError::AdminOnly
+    )]
+    pub config: Account<'info, KycAdminConfig>,
 
     #[account(
         init_if_needed,
@@ -26,9 +34,13 @@ pub fn handler(
     country_code: [u8; 2],
     expires_at: i64,
 ) -> Result<()> {
-    let kyc = &mut ctx.accounts.kyc_status;
     let clock = Clock::get()?;
 
+    // Input validation
+    require!(kyc_level <= 3, KycHookError::InvalidKycLevel);
+    require!(expires_at > clock.unix_timestamp, KycHookError::InvalidExpiryDate);
+
+    let kyc = &mut ctx.accounts.kyc_status;
     kyc.wallet = wallet;
     kyc.verified = true;
     kyc.kyc_level = kyc_level;

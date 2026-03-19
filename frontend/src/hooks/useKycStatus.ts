@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useConnection, useAnchorWallet } from '@solana/wallet-adapter-react';
 import { Program, AnchorProvider, BN } from '@coral-xyz/anchor';
 import { PublicKey, SystemProgram } from '@solana/web3.js';
-import { KYC_HOOK_PROGRAM_ID, getKycPDA } from '../lib/solana';
+import { getKycPDA, getKycAdminPDA } from '../lib/solana';
 
 import kycIdl from '../idl/signal_kyc_hook.json';
 
@@ -33,12 +33,12 @@ export function useKycStatus() {
   const [kycData, setKycData] = useState<KycData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const getProgram = useCallback(() => {
+  const getProgram = useCallback((): any => {
     if (!wallet) throw new Error('Wallet not connected');
     const provider = new AnchorProvider(connection, wallet, {
       commitment: 'confirmed',
     });
-    return new Program(kycIdl as any, KYC_HOOK_PROGRAM_ID, provider);
+    return new Program(kycIdl as any, provider);
   }, [wallet, connection]);
 
   const fetchKycStatus = useCallback(async (walletAddress?: PublicKey) => {
@@ -82,6 +82,7 @@ export function useKycStatus() {
     if (!wallet?.publicKey) throw new Error('Wallet not connected');
 
     const [kycPDA] = getKycPDA(wallet.publicKey);
+    const [configPDA] = getKycAdminPDA();
     const oneYearFromNow = Math.floor(Date.now() / 1000) + 365 * 24 * 60 * 60;
 
     const txHash = await program.methods
@@ -93,6 +94,7 @@ export function useKycStatus() {
       )
       .accounts({
         admin: wallet.publicKey,
+        config: configPDA,
         kycStatus: kycPDA,
         systemProgram: SystemProgram.programId,
       })
