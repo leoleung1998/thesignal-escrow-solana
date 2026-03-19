@@ -1,5 +1,6 @@
 import { useCallback, useState } from 'react';
-import { useConnection, useAnchorWallet } from '@solana/wallet-adapter-react';
+import { useConnection } from '@solana/wallet-adapter-react';
+import { useUnifiedAnchorWallet } from '../components/UnifiedWalletProvider';
 import { Program, AnchorProvider, BN } from '@coral-xyz/anchor';
 import { PublicKey, SystemProgram } from '@solana/web3.js';
 import { TOKEN_2022_PROGRAM_ID, getAssociatedTokenAddressSync } from '@solana/spl-token';
@@ -52,7 +53,7 @@ function parseMilestoneStatus(status: any): string {
 }
 
 export function useDealEscrow() {
-  const wallet = useAnchorWallet();
+  const wallet = useUnifiedAnchorWallet();
   const { connection } = useConnection();
   const [isProcessing, setIsProcessing] = useState(false);
 

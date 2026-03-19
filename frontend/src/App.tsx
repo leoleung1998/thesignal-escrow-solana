@@ -1,6 +1,4 @@
 import { useState, useCallback, useContext, createContext, useRef, useEffect } from 'react';
-import { useWallet } from '@solana/wallet-adapter-react';
-import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { PublicKey } from '@solana/web3.js';
 import {
   Award, Zap, ArrowRightLeft,
@@ -18,7 +16,8 @@ import { BlocklistDemo } from './components/BlocklistDemo';
 import { CreateDeal } from './components/CreateDeal';
 import { DealDashboard } from './components/DealDashboard';
 import { ReputationBadge } from './components/ReputationBadge';
-import { useSolanaWallet } from './hooks/useSolanaWallet';
+import { WalletConnectModal } from './components/WalletConnectModal';
+import { useUnifiedWallet } from './components/UnifiedWalletProvider';
 import { useDealEscrow, DealData } from './hooks/useDealEscrow';
 import {
   truncateAddress,
@@ -212,12 +211,12 @@ function LandingView({ onConnect }: { onConnect: () => void }) {
    Main App
    ============================================ */
 export default function App() {
-  const { connected, publicKey, disconnect } = useWallet();
-  const wallet = useSolanaWallet();
+  const wallet = useUnifiedWallet();
   const escrow = useDealEscrow();
 
   const [activeTab, setActiveTab] = useState<TabId>('compliance');
   const [lastCreatedDealId, setLastCreatedDealId] = useState<number | null>(null);
+  const [isConnectModalOpen, setIsConnectModalOpen] = useState(false);
 
   // --- Toast system with exit animation ---
   const [toasts, setToasts] = useState<Toast[]>([]);
@@ -261,14 +260,14 @@ export default function App() {
   // --- Keyboard tab navigation (Alt+1/2/3/4) ---
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
-      if (!e.altKey || !connected) return;
+      if (!e.altKey || !wallet.isConnected) return;
       const tabMap: Record<string, TabId> = { '1': 'compliance', '2': 'create', '3': 'deals', '4': 'oracle' };
       const tab = tabMap[e.key];
       if (tab) { e.preventDefault(); setActiveTab(tab); }
     };
     window.addEventListener('keydown', handleKey);
     return () => window.removeEventListener('keydown', handleKey);
-  }, [connected]);
+  }, [wallet.isConnected]);
 
   // --- Callback wrappers for extracted components ---
   const handleCreateDeal = useCallback(async (
@@ -336,7 +335,7 @@ export default function App() {
   }, [wallet.address]);
 
   const handleWalletConnect = useCallback(() => {
-    document.querySelector<HTMLButtonElement>('.wallet-adapter-button')?.click();
+    setIsConnectModalOpen(true);
   }, []);
 
   return (
@@ -346,7 +345,7 @@ export default function App() {
         <ToastContainer toasts={toasts} onDismiss={dismissToast} />
 
         {/* Live Ticker — homepage only */}
-        {!connected && tickerItems.length > 0 && <LiveTicker items={tickerItems} />}
+        {!wallet.isConnected && tickerItems.length > 0 && <LiveTicker items={tickerItems} />}
 
         {/* Header */}
         <header className="relative z-50 border-b border-zinc-800/80 bg-[#02040a]/80 backdrop-blur-2xl sticky top-0">
@@ -360,7 +359,7 @@ export default function App() {
               </div>
             </a>
 
-            {connected ? (
+            {wallet.isConnected ? (
               <div className="flex items-center gap-6">
                 {/* Desktop tabs in header */}
                 <nav className="hidden lg:flex gap-1.5">
@@ -384,7 +383,12 @@ export default function App() {
                 <div className="flex items-center gap-2 lg:gap-3 bg-[#09090b] border border-zinc-800/80 rounded-xl lg:rounded-2xl pl-3 lg:pl-4 pr-1 lg:pr-1.5 py-1 lg:py-1.5 shadow-xl">
                   <div className="hidden sm:flex flex-col items-end">
                     <span className="text-xs font-mono text-emerald-400 font-bold">{wallet.solBalance} SOL</span>
-                    <span className="text-[9px] text-zinc-500 uppercase tracking-widest font-bold">{NETWORK}</span>
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-[8px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded bg-zinc-800 border border-zinc-700 text-zinc-400">
+                        {wallet.activeSource === 'privy' ? 'Privy' : 'Extension'}
+                      </span>
+                      <span className="text-[9px] text-zinc-500 uppercase tracking-widest font-bold">{NETWORK}</span>
+                    </div>
                   </div>
                   <div className="bg-[#02040a] text-emerald-100 text-xs font-mono font-bold px-2 lg:px-3 py-2 lg:py-2.5 rounded-lg lg:rounded-xl border border-zinc-800 shadow-[inset_0_0_10px_rgba(16,185,129,0.05)] flex items-center gap-1.5 lg:gap-2">
                     <div className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)] shrink-0 animate-pulse-ring" />
@@ -394,7 +398,7 @@ export default function App() {
                     </button>
                     <span className="w-px h-4 bg-zinc-800 mx-0.5" />
                     <button
-                      onClick={() => disconnect()}
+                      onClick={() => wallet.disconnect()}
                       title="Disconnect wallet"
                       className="flex items-center gap-1 text-zinc-500 hover:text-red-400 hover:bg-red-500/10 transition-all px-1.5 lg:px-2 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider"
                     >
@@ -407,14 +411,16 @@ export default function App() {
             ) : (
               <div className="flex items-center gap-3">
                 <Tag color="blue">{NETWORK}</Tag>
-                <WalletMultiButton />
+                <Button onClick={handleWalletConnect} variant="primary" className="px-4 py-2 text-xs" icon={TerminalSquare}>
+                  Connect Wallet
+                </Button>
               </div>
             )}
           </div>
         </header>
 
         {/* Feature Banner (when connected) */}
-        {connected && (
+        {wallet.isConnected && (
           <div className="relative z-10 bg-gradient-to-r from-emerald-500/5 via-transparent to-emerald-500/5 border-b border-zinc-800/30">
             <div className="max-w-[90rem] mx-auto px-4 py-2.5 flex items-center justify-center gap-6 text-[10px] font-bold uppercase tracking-widest text-zinc-500">
               <span className="flex items-center gap-1.5"><Lock size={11} className="text-emerald-400" /> Transfer Hook KYC</span>
@@ -427,7 +433,7 @@ export default function App() {
 
         {/* Main Content */}
         <main className="relative z-10 max-w-[90rem] mx-auto px-3 sm:px-4 lg:px-6 py-4 lg:py-10 flex-1 w-full pb-20 lg:pb-0">
-          {!connected ? (
+          {!wallet.isConnected ? (
             <LandingView onConnect={handleWalletConnect} />
           ) : activeTab === 'compliance' ? (
             <div className="space-y-8 animate-fade-in">
@@ -526,8 +532,19 @@ export default function App() {
         </footer>
       </div>
 
+      {/* Wallet Connect Modal */}
+      <WalletConnectModal
+        isOpen={isConnectModalOpen}
+        onClose={() => setIsConnectModalOpen(false)}
+        onExtensionConnect={() => {
+          document.querySelector<HTMLButtonElement>('.wallet-adapter-button')?.click();
+          setIsConnectModalOpen(false);
+        }}
+        isPrivyAppConfigured={!!import.meta.env.VITE_PRIVY_APP_ID}
+      />
+
       {/* Mobile Bottom Tab Bar */}
-      {connected && (
+      {wallet.isConnected && (
         <nav className="fixed bottom-0 left-0 right-0 z-[9999] bg-[#0a0a0a] border-t border-zinc-700 lg:hidden pb-[env(safe-area-inset-bottom,0px)]">
           <div className="flex items-center justify-around h-14">
             {TABS.map(tab => (
