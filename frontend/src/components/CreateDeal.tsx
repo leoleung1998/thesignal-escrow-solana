@@ -5,6 +5,51 @@ import { useToast } from '../App';
 import { Card, Button } from './ui/Components';
 import { Settings2, Plus, X, Search, Coins, AlertCircle, ArrowRight, CheckCircle2, FileText, Check, ShieldCheck, Zap } from 'lucide-react';
 
+/* Step Indicator for multi-step flow */
+type StepId = 'configure' | 'review' | 'deploy' | 'success';
+
+function StepIndicator({ current }: { current: StepId }) {
+  const steps: { id: StepId; label: string }[] = [
+    { id: 'configure', label: 'Configure' },
+    { id: 'review', label: 'Review' },
+    { id: 'deploy', label: 'Deploy' },
+    { id: 'success', label: 'Success' },
+  ];
+  const currentIdx = steps.findIndex(s => s.id === current);
+
+  return (
+    <div className="flex items-center justify-center gap-1 sm:gap-2 mb-6 lg:mb-10">
+      {steps.map((step, i) => {
+        const isCompleted = i < currentIdx;
+        const isActive = i === currentIdx;
+        return (
+          <div key={step.id} className="flex items-center gap-1 sm:gap-2">
+            {i > 0 && (
+              <div className={`w-6 sm:w-8 lg:w-12 h-px transition-colors duration-500 ${isCompleted ? 'bg-emerald-500' : 'bg-zinc-800'}`} />
+            )}
+            <div className="flex items-center gap-1.5">
+              <div className={`w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center text-[10px] sm:text-xs font-bold border-2 transition-all duration-300 ${
+                isCompleted
+                  ? 'bg-emerald-500 border-emerald-500 text-[#02040a]'
+                  : isActive
+                    ? 'border-emerald-500 text-emerald-400 shadow-[0_0_10px_rgba(16,185,129,0.3)]'
+                    : 'border-zinc-800 text-zinc-600'
+              }`}>
+                {isCompleted ? <Check size={12} /> : i + 1}
+              </div>
+              <span className={`hidden sm:inline text-[10px] lg:text-xs font-bold uppercase tracking-wider transition-colors ${
+                isActive ? 'text-emerald-400' : isCompleted ? 'text-zinc-400' : 'text-zinc-600'
+              }`}>
+                {step.label}
+              </span>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 interface MilestoneInput {
   name: string;
   percentage: number;
@@ -187,6 +232,7 @@ export function CreateDeal({ onCreateDeal, onDealCreated }: Props) {
   if (result) {
     return (
       <div className="w-full max-w-2xl mx-auto animate-fade-in py-4 lg:py-12">
+        <StepIndicator current="success" />
         <Card className="relative overflow-hidden bg-[#02040a]">
           <div className="absolute top-0 right-0 p-32 bg-emerald-500/10 blur-[100px] rounded-full pointer-events-none" />
           <div className="absolute bottom-0 left-0 p-32 bg-emerald-500/5 blur-[100px] rounded-full pointer-events-none" />
@@ -245,6 +291,7 @@ export function CreateDeal({ onCreateDeal, onDealCreated }: Props) {
 
     return (
       <div className="w-full max-w-4xl mx-auto animate-fade-in">
+        <StepIndicator current={loading ? 'deploy' : 'review'} />
         <div className="mb-4 lg:mb-8">
           <h2 className="text-2xl lg:text-3xl font-black text-white tracking-tighter uppercase mb-1 lg:mb-2">Initialize Deployment</h2>
           <p className="text-zinc-500 font-medium text-sm lg:text-base">Final verification of contract parameters before signing.</p>
@@ -385,6 +432,7 @@ export function CreateDeal({ onCreateDeal, onDealCreated }: Props) {
   // --- Step 1: Input Form ---
   return (
     <div className="w-full max-w-5xl mx-auto space-y-4 lg:space-y-8 animate-fade-in">
+      <StepIndicator current="configure" />
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-3 lg:gap-4 mb-2 lg:mb-4">
         <div>
           <h2 className="text-2xl lg:text-3xl font-black text-white tracking-tighter uppercase mb-1 lg:mb-2">Contract Parameters</h2>

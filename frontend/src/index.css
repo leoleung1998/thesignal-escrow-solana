@@ -69,6 +69,39 @@
     from { opacity: 0; transform: scale(0.95); }
     to { opacity: 1; transform: scale(1); }
   }
+
+  /* Toast slide animations */
+  --animate-slide-in-right: slideInRight 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  --animate-slide-out-right: slideOutRight 0.3s cubic-bezier(0.7, 0, 0.84, 0) forwards;
+  @keyframes slideInRight {
+    from { opacity: 0; transform: translateX(100%); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+  @keyframes slideOutRight {
+    from { opacity: 1; transform: translateX(0); }
+    to { opacity: 0; transform: translateX(100%); }
+  }
+
+  /* Stagger fade-in for list items */
+  --animate-stagger-in: staggerFadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  @keyframes staggerFadeInUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Skeleton shimmer */
+  --animate-skeleton: skeletonPulse 1.8s ease-in-out infinite;
+  @keyframes skeletonPulse {
+    0%, 100% { opacity: 0.06; }
+    50% { opacity: 0.15; }
+  }
+
+  /* Scroll affordance bounce */
+  --animate-bounce-down: bounceDown 2s ease-in-out infinite;
+  @keyframes bounceDown {
+    0%, 100% { transform: translateY(0); opacity: 0.5; }
+    50% { transform: translateY(8px); opacity: 1; }
+  }
   @keyframes text-jitter {
     0%, 100% { transform: translate(0); text-shadow: 1px 0 0 rgba(16, 185, 129, 0.2), -1px 0 0 rgba(0, 255, 255, 0.2); }
     3%, 6%   { transform: translate(-1px, 0); text-shadow: 2px 0 0 rgba(16, 185, 129, 0.6), -2px 0 0 rgba(0, 255, 255, 0.6); }
@@ -144,6 +177,71 @@
   .glitch-wrapper:hover .glitch-text::before,
   .glitch-wrapper:hover .glitch-text::after {
     animation-duration: 2s;
+  }
+
+  /* Global focus-visible ring for interactive elements */
+  button:focus-visible,
+  a:focus-visible,
+  input:focus-visible,
+  textarea:focus-visible,
+  select:focus-visible,
+  [role="button"]:focus-visible,
+  [tabindex]:focus-visible {
+    outline: 2px solid rgba(52, 211, 153, 0.5);
+    outline-offset: 2px;
+  }
+
+  /* Skeleton loader */
+  .skeleton {
+    background: linear-gradient(90deg, #18181b 0%, #27272a 50%, #18181b 100%);
+    background-size: 200% 100%;
+    animation: skeletonPulse 1.8s ease-in-out infinite;
+    border-radius: 0.5rem;
+  }
+
+  /* Scroll progress bar */
+  .scroll-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 2px;
+    background: linear-gradient(90deg, #10b981, #34d399);
+    z-index: 99999;
+    transition: width 100ms linear;
+    pointer-events: none;
+  }
+
+  /* CSS-only tooltip */
+  .tooltip-trigger {
+    position: relative;
+  }
+  .tooltip-trigger .tooltip-content {
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%) scale(0.95);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s, transform 0.15s;
+    white-space: nowrap;
+    padding: 6px 10px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #e4e4e7;
+    background: #18181b;
+    border: 1px solid #27272a;
+    border-radius: 8px;
+    z-index: 100;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+  }
+  .tooltip-trigger .tooltip-content.tooltip-bottom {
+    bottom: auto;
+    top: calc(100% + 8px);
+  }
+  .tooltip-trigger:hover .tooltip-content {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+    pointer-events: auto;
   }
 
   /* Override wallet adapter button styles to match our theme */

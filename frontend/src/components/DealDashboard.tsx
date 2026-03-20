@@ -7,6 +7,7 @@ import { useToast } from '../App';
 import type { DealData } from '../hooks/useDealEscrow';
 import { getDealMetadata, recordMilestoneEvent, getAllDealEvents, formatEventDateTime, getEventLabel } from '../lib/dealMetadata';
 import { Card, Button, Tag } from './ui/Components';
+import { Tooltip } from './ui/Tooltip';
 
 /* ============================================
    Constants & Helpers
@@ -364,7 +365,7 @@ export function DealDashboard({
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 relative">
 
         {/* Left Panel: Deal List */}
-        <Card className={`lg:col-span-4 h-[calc(100svh-260px)] lg:h-[calc(100vh-200px)] min-h-[400px] flex flex-col min-w-0 ${mobileShowDetail ? 'hidden lg:flex' : 'flex'}`}>
+        <Card className={`lg:col-span-4 xl:col-span-3 h-[calc(100svh-260px)] lg:h-[calc(100vh-200px)] min-h-[400px] flex flex-col min-w-0 ${mobileShowDetail ? 'hidden lg:flex' : 'flex'}`}>
           <div className="flex flex-col h-full w-full min-w-0 overflow-hidden">
             <div className="p-3 border-b border-zinc-800/50 bg-zinc-900/30 flex flex-col gap-3 shrink-0 min-w-0 w-full">
               <div className="relative group min-w-0">
@@ -472,7 +473,7 @@ export function DealDashboard({
                   <p className="text-sm">Try adjusting your filters or create a new deal.</p>
                 </div>
               ) : (
-                filteredDeals.map((deal) => {
+                filteredDeals.map((deal, dealIdx) => {
                   const status = deal.data.status;
                   const role = getRole(deal.data, walletAddress);
                   const isSelected = selectedDealId === deal.id;
@@ -486,14 +487,17 @@ export function DealDashboard({
                           ? 'bg-emerald-500/10 border-emerald-500/30 shadow-[0_0_15px_rgba(16,185,129,0.1)]'
                           : 'bg-zinc-900/30 border-zinc-800/50 hover:bg-zinc-800/50 hover:border-zinc-700'
                       }`}
+                      style={{ animation: 'staggerFadeInUp 0.5s cubic-bezier(0.16,1,0.3,1) forwards', animationDelay: `${dealIdx * 60}ms`, opacity: 0 }}
                     >
                       <div className="font-mono text-sm font-medium text-zinc-200 group-hover:text-emerald-400 transition-colors truncate mb-2">
                         {getDealMetadata(deal.id)?.title || `Deal #${deal.id}`}
                       </div>
                       <div className="flex items-center justify-between gap-2">
-                        <Tag color={STATUS_COLORS[status] || 'zinc'} className="whitespace-nowrap shrink-0">
-                          {STATUS_LABELS[status] || status}
-                        </Tag>
+                        <Tooltip content={STATUS_LABELS[status] || status}>
+                          <Tag color={STATUS_COLORS[status] || 'zinc'} className="whitespace-nowrap shrink-0">
+                            {STATUS_LABELS[status] || status}
+                          </Tag>
+                        </Tooltip>
                         <div className="text-right shrink-0">
                           <div className="text-base font-semibold text-zinc-100 leading-tight">
                             {formatAmount(deal.data.totalAmount)} <span className="text-xs text-zinc-500">vUSDC</span>
@@ -519,7 +523,7 @@ export function DealDashboard({
         </Card>
 
         {/* Right Panel: Deal Details */}
-        <div className={`lg:col-span-8 h-full space-y-6 ${!mobileShowDetail ? 'hidden lg:block' : 'block'}`}>
+        <div className={`lg:col-span-8 xl:col-span-9 h-full space-y-6 ${!mobileShowDetail ? 'hidden lg:block' : 'block'}`}>
           {mobileShowDetail && (
             <button
               type="button"

@@ -407,9 +407,21 @@ export function ReputationBadge({ getReputation, getDealCount, getDeal, walletAd
         </div>
 
         {leaderLoading ? (
-          <div className="flex items-center justify-center gap-3 py-12 text-zinc-600">
-            <Loader2 size={18} className="animate-spin" />
-            <span className="text-sm">Scanning ledger...</span>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
+            {[0, 1].map((j) => (
+              <Card key={j} className="p-4 lg:p-6">
+                <div className="skeleton h-4 w-32 mb-5" />
+                <div className="space-y-3">
+                  {[0, 1, 2, 3, 4].map((k) => (
+                    <div key={k} className="flex items-center gap-3">
+                      <div className="skeleton w-6 h-4 shrink-0" />
+                      <div className="skeleton flex-1 h-4" />
+                      <div className="skeleton w-16 h-4 shrink-0" />
+                    </div>
+                  ))}
+                </div>
+              </Card>
+            ))}
           </div>
         ) : !leaderboard || (leaderboard.clients.length === 0 && leaderboard.providers.length === 0) ? (
           <p className="text-sm text-zinc-600 text-center py-8">No on-chain data found.</p>
@@ -425,7 +437,7 @@ export function ReputationBadge({ getReputation, getDealCount, getDeal, walletAd
                 </div>
                 <div className="space-y-3">
                   {leaderboard.clients.map((entry, i) => (
-                    <div key={entry.address} className="flex items-center gap-3">
+                    <div key={entry.address} className="flex items-center gap-3" style={{ animation: 'staggerFadeInUp 0.5s cubic-bezier(0.16,1,0.3,1) forwards', animationDelay: `${i * 80}ms`, opacity: 0 }}>
                       <span className={`w-6 text-center text-xs font-black shrink-0 ${i === 0 ? 'text-amber-400' : i === 1 ? 'text-zinc-300' : i === 2 ? 'text-amber-700' : 'text-zinc-600'}`}>
                         {i + 1}
                       </span>
@@ -470,7 +482,7 @@ export function ReputationBadge({ getReputation, getDealCount, getDeal, walletAd
                       ? Math.round((entry.milestonesReleased / entry.milestonesTotal) * 100)
                       : 0;
                     return (
-                      <div key={entry.address} className="flex items-center gap-3">
+                      <div key={entry.address} className="flex items-center gap-3" style={{ animation: 'staggerFadeInUp 0.5s cubic-bezier(0.16,1,0.3,1) forwards', animationDelay: `${i * 80}ms`, opacity: 0 }}>
                         <span className={`w-6 text-center text-xs font-black shrink-0 ${i === 0 ? 'text-amber-400' : i === 1 ? 'text-zinc-300' : i === 2 ? 'text-amber-700' : 'text-zinc-600'}`}>
                           {i + 1}
                         </span>
@@ -514,7 +526,7 @@ export function ReputationBadge({ getReputation, getDealCount, getDeal, walletAd
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3">
                   {leaderboard.connectors.map((entry, i) => (
-                    <div key={entry.address} className="flex items-center gap-3 bg-zinc-900/40 border border-zinc-800/50 rounded-xl px-3 py-2.5">
+                    <div key={entry.address} className="flex items-center gap-3 bg-zinc-900/40 border border-zinc-800/50 rounded-xl px-3 py-2.5" style={{ animation: 'staggerFadeInUp 0.5s cubic-bezier(0.16,1,0.3,1) forwards', animationDelay: `${i * 80}ms`, opacity: 0 }}>
                       <span className={`w-5 text-center text-xs font-black shrink-0 ${i === 0 ? 'text-amber-400' : i === 1 ? 'text-zinc-300' : i === 2 ? 'text-amber-700' : 'text-zinc-600'}`}>
                         {i + 1}
                       </span>
