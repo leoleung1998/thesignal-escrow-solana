@@ -1,5 +1,4 @@
-import { Buffer } from 'buffer';
-(window as any).Buffer = Buffer;
+import './polyfills';
 
 import React from 'react';
 import ReactDOM from 'react-dom/client';
