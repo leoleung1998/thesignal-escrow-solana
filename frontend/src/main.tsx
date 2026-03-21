@@ -8,6 +8,7 @@ import { WalletProviderWrapper } from './components/WalletProvider';
 import { UnifiedWalletProvider } from './components/UnifiedWalletProvider';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { PrivyProvider } from '@privy-io/react-auth';
+import { createSolanaRpc, createSolanaRpcSubscriptions } from '@solana/kit';
 import './index.css';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
@@ -24,10 +25,18 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           embeddedWallets: {
             ethereum: { createOnLogin: 'off' },
           },
-          solanaClusters: [
-            { name: 'devnet', rpcUrl: 'https://api.devnet.solana.com' },
-            { name: 'mainnet-beta', rpcUrl: 'https://api.mainnet-beta.solana.com' },
-          ],
+          solana: {
+            rpcs: {
+              'solana:devnet': {
+                rpc: createSolanaRpc('https://api.devnet.solana.com'),
+                rpcSubscriptions: createSolanaRpcSubscriptions('wss://api.devnet.solana.com'),
+              },
+              'solana:mainnet-beta': {
+                rpc: createSolanaRpc('https://api.mainnet-beta.solana.com'),
+                rpcSubscriptions: createSolanaRpcSubscriptions('wss://api.mainnet-beta.solana.com'),
+              },
+            },
+          },
         }}
       >
         <WalletProviderWrapper>
