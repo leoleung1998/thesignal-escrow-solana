@@ -1,5 +1,5 @@
 {
-  "address": "DdfRLgw8YFB8ao4YaKpPfdorEPW1EhoE1gE3FYzdhNnu",
+  "address": "Cv9qz4mN9kXAoLgNXpiZ1kuzhgXvcZabYSbYjgLQSrWg",
   "metadata": {
     "name": "signal_escrow",
     "version": "0.1.0",
@@ -8,183 +8,604 @@
   "instructions": [
     {
       "name": "initialize",
-      "discriminator": [175, 175, 109, 31, 13, 152, 155, 237],
+      "discriminator": [
+        175,
+        175,
+        109,
+        31,
+        13,
+        152,
+        155,
+        237
+      ],
       "accounts": [
-        { "name": "admin", "writable": true, "signer": true },
-        { "name": "protocolWallet" },
-        { "name": "config", "writable": true, "pda": { "seeds": [{ "kind": "const", "value": [101, 115, 99, 114, 111, 119, 95, 99, 111, 110, 102, 105, 103] }] } },
-        { "name": "systemProgram", "address": "11111111111111111111111111111111" }
+        {
+          "name": "admin",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "protocolWallet"
+        },
+        {
+          "name": "config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  101,
+                  115,
+                  99,
+                  114,
+                  111,
+                  119,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "systemProgram",
+          "address": "11111111111111111111111111111111"
+        }
       ],
       "args": []
     },
     {
       "name": "createDeal",
-      "discriminator": [198, 212, 144, 151, 97, 56, 149, 113],
+      "discriminator": [
+        198,
+        212,
+        144,
+        151,
+        97,
+        56,
+        149,
+        113
+      ],
       "accounts": [
-        { "name": "client", "writable": true, "signer": true },
-        { "name": "provider" },
-        { "name": "connector" },
-        { "name": "config", "writable": true },
-        { "name": "deal", "writable": true },
-        { "name": "vault", "writable": true },
-        { "name": "tokenMint" },
-        { "name": "tokenProgram" },
-        { "name": "systemProgram", "address": "11111111111111111111111111111111" }
+        {
+          "name": "client",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "provider"
+        },
+        {
+          "name": "connector"
+        },
+        {
+          "name": "config",
+          "writable": true
+        },
+        {
+          "name": "deal",
+          "writable": true
+        },
+        {
+          "name": "vault",
+          "writable": true
+        },
+        {
+          "name": "tokenMint"
+        },
+        {
+          "name": "tokenProgram"
+        },
+        {
+          "name": "systemProgram",
+          "address": "11111111111111111111111111111111"
+        }
       ],
       "args": [
-        { "name": "platformFeeBps", "type": "u16" },
-        { "name": "connectorShareBps", "type": "u16" },
-        { "name": "milestoneAmounts", "type": { "vec": "u64" } }
+        {
+          "name": "platformFeeBps",
+          "type": "u16"
+        },
+        {
+          "name": "connectorShareBps",
+          "type": "u16"
+        },
+        {
+          "name": "milestoneAmounts",
+          "type": {
+            "vec": "u64"
+          }
+        }
       ]
     },
     {
       "name": "deposit",
-      "discriminator": [242, 35, 198, 137, 82, 225, 242, 182],
+      "discriminator": [
+        242,
+        35,
+        198,
+        137,
+        82,
+        225,
+        242,
+        182
+      ],
       "accounts": [
-        { "name": "client", "writable": true, "signer": true },
-        { "name": "deal", "writable": true },
-        { "name": "vault", "writable": true },
-        { "name": "clientTokenAccount", "writable": true },
-        { "name": "tokenMint" },
-        { "name": "tokenProgram" }
+        {
+          "name": "client",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "deal",
+          "writable": true
+        },
+        {
+          "name": "vault",
+          "writable": true
+        },
+        {
+          "name": "clientTokenAccount",
+          "writable": true
+        },
+        {
+          "name": "tokenMint"
+        },
+        {
+          "name": "tokenProgram"
+        }
       ],
       "args": [
-        { "name": "dealId", "type": "u64" },
-        { "name": "milestoneIdx", "type": "u8" }
+        {
+          "name": "dealId",
+          "type": "u64"
+        },
+        {
+          "name": "milestoneIdx",
+          "type": "u8"
+        }
       ]
     },
     {
       "name": "releaseMilestone",
-      "discriminator": [56, 2, 199, 164, 184, 108, 167, 222],
+      "discriminator": [
+        56,
+        2,
+        199,
+        164,
+        184,
+        108,
+        167,
+        222
+      ],
       "accounts": [
-        { "name": "client", "writable": true, "signer": true },
-        { "name": "deal", "writable": true },
-        { "name": "vault", "writable": true },
-        { "name": "providerTokenAccount", "writable": true },
-        { "name": "connectorTokenAccount", "writable": true },
-        { "name": "protocolTokenAccount", "writable": true },
-        { "name": "tokenMint" },
-        { "name": "tokenProgram" },
-        { "name": "reputation", "writable": true },
-        { "name": "systemProgram", "address": "11111111111111111111111111111111" }
+        {
+          "name": "client",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "deal",
+          "writable": true
+        },
+        {
+          "name": "vault",
+          "writable": true
+        },
+        {
+          "name": "providerTokenAccount",
+          "writable": true
+        },
+        {
+          "name": "connectorTokenAccount",
+          "writable": true
+        },
+        {
+          "name": "protocolTokenAccount",
+          "writable": true
+        },
+        {
+          "name": "tokenMint"
+        },
+        {
+          "name": "tokenProgram"
+        },
+        {
+          "name": "reputation",
+          "writable": true
+        },
+        {
+          "name": "systemProgram",
+          "address": "11111111111111111111111111111111"
+        }
       ],
       "args": [
-        { "name": "dealId", "type": "u64" },
-        { "name": "milestoneIdx", "type": "u8" }
+        {
+          "name": "dealId",
+          "type": "u64"
+        },
+        {
+          "name": "milestoneIdx",
+          "type": "u8"
+        }
       ]
     },
     {
       "name": "dispute",
-      "discriminator": [216, 92, 128, 146, 202, 85, 135, 73],
+      "discriminator": [
+        216,
+        92,
+        128,
+        146,
+        202,
+        85,
+        135,
+        73
+      ],
       "accounts": [
-        { "name": "caller", "signer": true },
-        { "name": "deal", "writable": true }
+        {
+          "name": "caller",
+          "signer": true
+        },
+        {
+          "name": "deal",
+          "writable": true
+        }
       ],
       "args": [
-        { "name": "dealId", "type": "u64" },
-        { "name": "milestoneIdx", "type": "u8" }
+        {
+          "name": "dealId",
+          "type": "u64"
+        },
+        {
+          "name": "milestoneIdx",
+          "type": "u8"
+        }
       ]
     },
     {
       "name": "resolveDispute",
-      "discriminator": [231, 6, 202, 6, 96, 103, 12, 230],
+      "discriminator": [
+        231,
+        6,
+        202,
+        6,
+        96,
+        103,
+        12,
+        230
+      ],
       "accounts": [
-        { "name": "admin", "writable": true, "signer": true },
-        { "name": "config" },
-        { "name": "deal", "writable": true },
-        { "name": "vault", "writable": true },
-        { "name": "clientTokenAccount", "writable": true },
-        { "name": "providerTokenAccount", "writable": true },
-        { "name": "tokenMint" },
-        { "name": "tokenProgram" }
+        {
+          "name": "admin",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "config"
+        },
+        {
+          "name": "deal",
+          "writable": true
+        },
+        {
+          "name": "vault",
+          "writable": true
+        },
+        {
+          "name": "clientTokenAccount",
+          "writable": true
+        },
+        {
+          "name": "providerTokenAccount",
+          "writable": true
+        },
+        {
+          "name": "tokenMint"
+        },
+        {
+          "name": "tokenProgram"
+        }
       ],
       "args": [
-        { "name": "dealId", "type": "u64" },
-        { "name": "milestoneIdx", "type": "u8" },
-        { "name": "refundBps", "type": "u16" }
+        {
+          "name": "dealId",
+          "type": "u64"
+        },
+        {
+          "name": "milestoneIdx",
+          "type": "u8"
+        },
+        {
+          "name": "refundBps",
+          "type": "u16"
+        }
       ]
     },
     {
       "name": "refund",
-      "discriminator": [2, 96, 183, 251, 63, 208, 46, 46],
+      "discriminator": [
+        2,
+        96,
+        183,
+        251,
+        63,
+        208,
+        46,
+        46
+      ],
       "accounts": [
-        { "name": "admin", "writable": true, "signer": true },
-        { "name": "config" },
-        { "name": "deal", "writable": true },
-        { "name": "vault", "writable": true },
-        { "name": "clientTokenAccount", "writable": true },
-        { "name": "tokenMint" },
-        { "name": "tokenProgram" }
+        {
+          "name": "admin",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "config"
+        },
+        {
+          "name": "deal",
+          "writable": true
+        },
+        {
+          "name": "vault",
+          "writable": true
+        },
+        {
+          "name": "clientTokenAccount",
+          "writable": true
+        },
+        {
+          "name": "tokenMint"
+        },
+        {
+          "name": "tokenProgram"
+        }
       ],
       "args": [
-        { "name": "dealId", "type": "u64" }
+        {
+          "name": "dealId",
+          "type": "u64"
+        }
       ]
     }
   ],
   "accounts": [
     {
       "name": "escrowConfig",
-      "discriminator": [138, 174, 227, 187, 239, 148, 1, 44]
+      "discriminator": [
+        138,
+        174,
+        227,
+        187,
+        239,
+        148,
+        1,
+        44
+      ]
     },
     {
       "name": "deal",
-      "discriminator": [125, 223, 160, 234, 71, 162, 182, 219]
+      "discriminator": [
+        125,
+        223,
+        160,
+        234,
+        71,
+        162,
+        182,
+        219
+      ]
     },
     {
       "name": "reputation",
-      "discriminator": [55, 148, 90, 71, 68, 183, 193, 28]
+      "discriminator": [
+        55,
+        148,
+        90,
+        71,
+        68,
+        183,
+        193,
+        28
+      ]
     }
   ],
   "events": [
     {
       "name": "dealCreated",
-      "discriminator": [27, 18, 50, 52, 104, 175, 46, 101]
+      "discriminator": [
+        27,
+        18,
+        50,
+        52,
+        104,
+        175,
+        46,
+        101
+      ]
     },
     {
       "name": "milestoneFunded",
-      "discriminator": [133, 223, 85, 235, 56, 36, 238, 240]
+      "discriminator": [
+        133,
+        223,
+        85,
+        235,
+        56,
+        36,
+        238,
+        240
+      ]
     },
     {
       "name": "milestoneReleased",
-      "discriminator": [49, 225, 91, 223, 34, 165, 109, 181]
+      "discriminator": [
+        49,
+        225,
+        91,
+        223,
+        34,
+        165,
+        109,
+        181
+      ]
     },
     {
       "name": "dealCompleted",
-      "discriminator": [3, 185, 99, 192, 252, 161, 216, 28]
+      "discriminator": [
+        3,
+        185,
+        99,
+        192,
+        252,
+        161,
+        216,
+        28
+      ]
     },
     {
       "name": "dealDisputed",
-      "discriminator": [232, 107, 140, 245, 64, 71, 20, 223]
+      "discriminator": [
+        232,
+        107,
+        140,
+        245,
+        64,
+        71,
+        20,
+        223
+      ]
     },
     {
       "name": "disputeResolved",
-      "discriminator": [121, 64, 249, 153, 139, 128, 236, 187]
+      "discriminator": [
+        121,
+        64,
+        249,
+        153,
+        139,
+        128,
+        236,
+        187
+      ]
     },
     {
       "name": "dealRefunded",
-      "discriminator": [1, 108, 122, 221, 101, 137, 102, 17]
+      "discriminator": [
+        1,
+        108,
+        122,
+        221,
+        101,
+        137,
+        102,
+        17
+      ]
     }
   ],
   "errors": [
-    { "code": 6000, "name": "unauthorized", "msg": "Only the deal client can perform this action" },
-    { "code": 6001, "name": "adminOnly", "msg": "Only the admin can perform this action" },
-    { "code": 6002, "name": "invalidFeeBps", "msg": "Fee basis points must be <= 10000" },
-    { "code": 6003, "name": "invalidConnectorShareBps", "msg": "Connector share basis points must be <= 10000" },
-    { "code": 6004, "name": "noMilestones", "msg": "At least one milestone is required" },
-    { "code": 6005, "name": "tooManyMilestones", "msg": "Maximum 10 milestones allowed" },
-    { "code": 6006, "name": "zeroMilestoneAmount", "msg": "Milestone amount must be greater than 0" },
-    { "code": 6007, "name": "dealNotFound", "msg": "Deal not found" },
-    { "code": 6008, "name": "invalidMilestoneIndex", "msg": "Invalid milestone index" },
-    { "code": 6009, "name": "alreadyFunded", "msg": "Milestone already funded" },
-    { "code": 6010, "name": "notFunded", "msg": "Milestone not funded" },
-    { "code": 6011, "name": "dealNotActive", "msg": "Deal is not active" },
-    { "code": 6012, "name": "dealNotDisputed", "msg": "Deal is not in disputed state" },
-    { "code": 6013, "name": "milestoneNotDisputed", "msg": "Milestone is not in disputed state" },
-    { "code": 6014, "name": "disputeUnauthorized", "msg": "Only client or provider can dispute" },
-    { "code": 6015, "name": "invalidRefundBps", "msg": "Refund basis points must be <= 10000" },
-    { "code": 6016, "name": "dealFinalized", "msg": "Deal already completed or cancelled" },
-    { "code": 6017, "name": "nothingToRefund", "msg": "No milestones to refund" },
-    { "code": 6018, "name": "overflow", "msg": "Arithmetic overflow" }
+    {
+      "code": 6000,
+      "name": "unauthorized",
+      "msg": "Only the deal client can perform this action"
+    },
+    {
+      "code": 6001,
+      "name": "adminOnly",
+      "msg": "Only the admin can perform this action"
+    },
+    {
+      "code": 6002,
+      "name": "invalidFeeBps",
+      "msg": "Fee basis points must be <= 10000"
+    },
+    {
+      "code": 6003,
+      "name": "invalidConnectorShareBps",
+      "msg": "Connector share basis points must be <= 10000"
+    },
+    {
+      "code": 6004,
+      "name": "noMilestones",
+      "msg": "At least one milestone is required"
+    },
+    {
+      "code": 6005,
+      "name": "tooManyMilestones",
+      "msg": "Maximum 10 milestones allowed"
+    },
+    {
+      "code": 6006,
+      "name": "zeroMilestoneAmount",
+      "msg": "Milestone amount must be greater than 0"
+    },
+    {
+      "code": 6007,
+      "name": "dealNotFound",
+      "msg": "Deal not found"
+    },
+    {
+      "code": 6008,
+      "name": "invalidMilestoneIndex",
+      "msg": "Invalid milestone index"
+    },
+    {
+      "code": 6009,
+      "name": "alreadyFunded",
+      "msg": "Milestone already funded"
+    },
+    {
+      "code": 6010,
+      "name": "notFunded",
+      "msg": "Milestone not funded"
+    },
+    {
+      "code": 6011,
+      "name": "dealNotActive",
+      "msg": "Deal is not active"
+    },
+    {
+      "code": 6012,
+      "name": "dealNotDisputed",
+      "msg": "Deal is not in disputed state"
+    },
+    {
+      "code": 6013,
+      "name": "milestoneNotDisputed",
+      "msg": "Milestone is not in disputed state"
+    },
+    {
+      "code": 6014,
+      "name": "disputeUnauthorized",
+      "msg": "Only client or provider can dispute"
+    },
+    {
+      "code": 6015,
+      "name": "invalidRefundBps",
+      "msg": "Refund basis points must be <= 10000"
+    },
+    {
+      "code": 6016,
+      "name": "dealFinalized",
+      "msg": "Deal already completed or cancelled"
+    },
+    {
+      "code": 6017,
+      "name": "nothingToRefund",
+      "msg": "No milestones to refund"
+    },
+    {
+      "code": 6018,
+      "name": "overflow",
+      "msg": "Arithmetic overflow"
+    }
   ],
   "types": [
     {
@@ -192,10 +613,22 @@
       "type": {
         "kind": "struct",
         "fields": [
-          { "name": "admin", "type": "pubkey" },
-          { "name": "protocolWallet", "type": "pubkey" },
-          { "name": "dealCount", "type": "u64" },
-          { "name": "bump", "type": "u8" }
+          {
+            "name": "admin",
+            "type": "pubkey"
+          },
+          {
+            "name": "protocolWallet",
+            "type": "pubkey"
+          },
+          {
+            "name": "dealCount",
+            "type": "u64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
         ]
       }
     },
@@ -204,22 +637,80 @@
       "type": {
         "kind": "struct",
         "fields": [
-          { "name": "dealId", "type": "u64" },
-          { "name": "client", "type": "pubkey" },
-          { "name": "provider", "type": "pubkey" },
-          { "name": "connector", "type": "pubkey" },
-          { "name": "protocolWallet", "type": "pubkey" },
-          { "name": "tokenMint", "type": "pubkey" },
-          { "name": "vault", "type": "pubkey" },
-          { "name": "totalAmount", "type": "u64" },
-          { "name": "platformFeeBps", "type": "u16" },
-          { "name": "connectorShareBps", "type": "u16" },
-          { "name": "status", "type": { "defined": { "name": "dealStatus" } } },
-          { "name": "fundedAmount", "type": "u64" },
-          { "name": "milestoneCount", "type": "u8" },
-          { "name": "bump", "type": "u8" },
-          { "name": "vaultBump", "type": "u8" },
-          { "name": "milestones", "type": { "vec": { "defined": { "name": "milestone" } } } }
+          {
+            "name": "dealId",
+            "type": "u64"
+          },
+          {
+            "name": "client",
+            "type": "pubkey"
+          },
+          {
+            "name": "provider",
+            "type": "pubkey"
+          },
+          {
+            "name": "connector",
+            "type": "pubkey"
+          },
+          {
+            "name": "protocolWallet",
+            "type": "pubkey"
+          },
+          {
+            "name": "tokenMint",
+            "type": "pubkey"
+          },
+          {
+            "name": "vault",
+            "type": "pubkey"
+          },
+          {
+            "name": "totalAmount",
+            "type": "u64"
+          },
+          {
+            "name": "platformFeeBps",
+            "type": "u16"
+          },
+          {
+            "name": "connectorShareBps",
+            "type": "u16"
+          },
+          {
+            "name": "status",
+            "type": {
+              "defined": {
+                "name": "dealStatus"
+              }
+            }
+          },
+          {
+            "name": "fundedAmount",
+            "type": "u64"
+          },
+          {
+            "name": "milestoneCount",
+            "type": "u8"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "vaultBump",
+            "type": "u8"
+          },
+          {
+            "name": "milestones",
+            "type": {
+              "vec": {
+                "defined": {
+                  "name": "milestone"
+                }
+              }
+            }
+          }
         ]
       }
     },
@@ -228,9 +719,18 @@
       "type": {
         "kind": "struct",
         "fields": [
-          { "name": "provider", "type": "pubkey" },
-          { "name": "completedDeals", "type": "u64" },
-          { "name": "bump", "type": "u8" }
+          {
+            "name": "provider",
+            "type": "pubkey"
+          },
+          {
+            "name": "completedDeals",
+            "type": "u64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
         ]
       }
     },
@@ -239,11 +739,21 @@
       "type": {
         "kind": "enum",
         "variants": [
-          { "name": "created" },
-          { "name": "active" },
-          { "name": "completed" },
-          { "name": "cancelled" },
-          { "name": "disputed" }
+          {
+            "name": "created"
+          },
+          {
+            "name": "active"
+          },
+          {
+            "name": "completed"
+          },
+          {
+            "name": "cancelled"
+          },
+          {
+            "name": "disputed"
+          }
         ]
       }
     },
@@ -252,8 +762,18 @@
       "type": {
         "kind": "struct",
         "fields": [
-          { "name": "amount", "type": "u64" },
-          { "name": "status", "type": { "defined": { "name": "milestoneStatus" } } }
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "status",
+            "type": {
+              "defined": {
+                "name": "milestoneStatus"
+              }
+            }
+          }
         ]
       }
     },
@@ -262,11 +782,21 @@
       "type": {
         "kind": "enum",
         "variants": [
-          { "name": "pending" },
-          { "name": "funded" },
-          { "name": "released" },
-          { "name": "disputed" },
-          { "name": "refunded" }
+          {
+            "name": "pending"
+          },
+          {
+            "name": "funded"
+          },
+          {
+            "name": "released"
+          },
+          {
+            "name": "disputed"
+          },
+          {
+            "name": "refunded"
+          }
         ]
       }
     },
@@ -275,12 +805,30 @@
       "type": {
         "kind": "struct",
         "fields": [
-          { "name": "dealId", "type": "u64" },
-          { "name": "client", "type": "pubkey" },
-          { "name": "provider", "type": "pubkey" },
-          { "name": "connector", "type": "pubkey" },
-          { "name": "totalAmount", "type": "u64" },
-          { "name": "milestoneCount", "type": "u8" }
+          {
+            "name": "dealId",
+            "type": "u64"
+          },
+          {
+            "name": "client",
+            "type": "pubkey"
+          },
+          {
+            "name": "provider",
+            "type": "pubkey"
+          },
+          {
+            "name": "connector",
+            "type": "pubkey"
+          },
+          {
+            "name": "totalAmount",
+            "type": "u64"
+          },
+          {
+            "name": "milestoneCount",
+            "type": "u8"
+          }
         ]
       }
     },
@@ -289,9 +837,18 @@
       "type": {
         "kind": "struct",
         "fields": [
-          { "name": "dealId", "type": "u64" },
-          { "name": "milestoneIdx", "type": "u8" },
-          { "name": "amount", "type": "u64" }
+          {
+            "name": "dealId",
+            "type": "u64"
+          },
+          {
+            "name": "milestoneIdx",
+            "type": "u8"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          }
         ]
       }
     },
@@ -300,11 +857,26 @@
       "type": {
         "kind": "struct",
         "fields": [
-          { "name": "dealId", "type": "u64" },
-          { "name": "milestoneIdx", "type": "u8" },
-          { "name": "providerAmount", "type": "u64" },
-          { "name": "connectorAmount", "type": "u64" },
-          { "name": "protocolAmount", "type": "u64" }
+          {
+            "name": "dealId",
+            "type": "u64"
+          },
+          {
+            "name": "milestoneIdx",
+            "type": "u8"
+          },
+          {
+            "name": "providerAmount",
+            "type": "u64"
+          },
+          {
+            "name": "connectorAmount",
+            "type": "u64"
+          },
+          {
+            "name": "protocolAmount",
+            "type": "u64"
+          }
         ]
       }
     },
@@ -313,9 +885,18 @@
       "type": {
         "kind": "struct",
         "fields": [
-          { "name": "dealId", "type": "u64" },
-          { "name": "provider", "type": "pubkey" },
-          { "name": "newReputation", "type": "u64" }
+          {
+            "name": "dealId",
+            "type": "u64"
+          },
+          {
+            "name": "provider",
+            "type": "pubkey"
+          },
+          {
+            "name": "newReputation",
+            "type": "u64"
+          }
         ]
       }
     },
@@ -324,9 +905,18 @@
       "type": {
         "kind": "struct",
         "fields": [
-          { "name": "dealId", "type": "u64" },
-          { "name": "milestoneIdx", "type": "u8" },
-          { "name": "disputedBy", "type": "pubkey" }
+          {
+            "name": "dealId",
+            "type": "u64"
+          },
+          {
+            "name": "milestoneIdx",
+            "type": "u8"
+          },
+          {
+            "name": "disputedBy",
+            "type": "pubkey"
+          }
         ]
       }
     },
@@ -335,10 +925,22 @@
       "type": {
         "kind": "struct",
         "fields": [
-          { "name": "dealId", "type": "u64" },
-          { "name": "milestoneIdx", "type": "u8" },
-          { "name": "clientRefund", "type": "u64" },
-          { "name": "providerAmount", "type": "u64" }
+          {
+            "name": "dealId",
+            "type": "u64"
+          },
+          {
+            "name": "milestoneIdx",
+            "type": "u8"
+          },
+          {
+            "name": "clientRefund",
+            "type": "u64"
+          },
+          {
+            "name": "providerAmount",
+            "type": "u64"
+          }
         ]
       }
     },
@@ -347,8 +949,14 @@
       "type": {
         "kind": "struct",
         "fields": [
-          { "name": "dealId", "type": "u64" },
-          { "name": "totalRefunded", "type": "u64" }
+          {
+            "name": "dealId",
+            "type": "u64"
+          },
+          {
+            "name": "totalRefunded",
+            "type": "u64"
+          }
         ]
       }
     }

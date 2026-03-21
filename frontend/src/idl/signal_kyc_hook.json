@@ -1,5 +1,5 @@
 {
-  "address": "5zyZimCxauJ4SsiAkB5PVBTevyLnznRfdoqJs1odjNSN",
+  "address": "FNsAAZABER8g8QUdJsfhMLck3JzNRmBHomozRiiwCM2B",
   "metadata": {
     "name": "signal_kyc_hook",
     "version": "0.1.0",
@@ -8,111 +8,365 @@
   "instructions": [
     {
       "name": "initializeKycAdmin",
-      "discriminator": [122, 167, 12, 102, 207, 130, 41, 121],
+      "discriminator": [
+        122,
+        167,
+        12,
+        102,
+        207,
+        130,
+        41,
+        121
+      ],
       "accounts": [
-        { "name": "admin", "writable": true, "signer": true },
-        { "name": "config", "writable": true, "pda": { "seeds": [{ "kind": "const", "value": [107, 121, 99, 95, 97, 100, 109, 105, 110] }] } },
-        { "name": "systemProgram", "address": "11111111111111111111111111111111" }
+        {
+          "name": "admin",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  107,
+                  121,
+                  99,
+                  95,
+                  97,
+                  100,
+                  109,
+                  105,
+                  110
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "systemProgram",
+          "address": "11111111111111111111111111111111"
+        }
       ],
       "args": []
     },
     {
       "name": "initializeExtraAccountMetaList",
-      "discriminator": [92, 197, 174, 197, 41, 124, 19, 3],
+      "discriminator": [
+        92,
+        197,
+        174,
+        197,
+        41,
+        124,
+        19,
+        3
+      ],
       "accounts": [
-        { "name": "payer", "writable": true, "signer": true },
-        { "name": "extraAccountMetaList", "writable": true },
-        { "name": "mint" },
-        { "name": "systemProgram", "address": "11111111111111111111111111111111" }
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "extraAccountMetaList",
+          "writable": true
+        },
+        {
+          "name": "mint"
+        },
+        {
+          "name": "systemProgram",
+          "address": "11111111111111111111111111111111"
+        }
       ],
       "args": []
     },
     {
       "name": "transferHook",
-      "discriminator": [220, 57, 220, 152, 126, 125, 97, 168],
+      "discriminator": [
+        220,
+        57,
+        220,
+        152,
+        126,
+        125,
+        97,
+        168
+      ],
       "accounts": [
-        { "name": "sourceToken" },
-        { "name": "mint" },
-        { "name": "destinationToken" },
-        { "name": "owner" },
-        { "name": "extraAccountMetaList" },
-        { "name": "senderKyc" },
-        { "name": "receiverKyc" }
+        {
+          "name": "sourceToken"
+        },
+        {
+          "name": "mint"
+        },
+        {
+          "name": "destinationToken"
+        },
+        {
+          "name": "owner"
+        },
+        {
+          "name": "extraAccountMetaList"
+        },
+        {
+          "name": "senderKyc"
+        },
+        {
+          "name": "receiverKyc"
+        }
       ],
       "args": [
-        { "name": "amount", "type": "u64" }
+        {
+          "name": "amount",
+          "type": "u64"
+        }
       ]
     },
     {
       "name": "registerKyc",
-      "discriminator": [230, 67, 245, 42, 249, 254, 177, 166],
+      "discriminator": [
+        230,
+        67,
+        245,
+        42,
+        249,
+        254,
+        177,
+        166
+      ],
       "accounts": [
-        { "name": "admin", "writable": true, "signer": true },
-        { "name": "config" },
-        { "name": "kycStatus", "writable": true },
-        { "name": "systemProgram", "address": "11111111111111111111111111111111" }
+        {
+          "name": "admin",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "config"
+        },
+        {
+          "name": "kycStatus",
+          "writable": true
+        },
+        {
+          "name": "systemProgram",
+          "address": "11111111111111111111111111111111"
+        }
       ],
       "args": [
-        { "name": "wallet", "type": "pubkey" },
-        { "name": "kycLevel", "type": "u8" },
-        { "name": "countryCode", "type": { "array": ["u8", 2] } },
-        { "name": "expiresAt", "type": "i64" }
+        {
+          "name": "wallet",
+          "type": "pubkey"
+        },
+        {
+          "name": "kycLevel",
+          "type": "u8"
+        },
+        {
+          "name": "countryCode",
+          "type": {
+            "array": [
+              "u8",
+              2
+            ]
+          }
+        },
+        {
+          "name": "expiresAt",
+          "type": "i64"
+        }
       ]
     },
     {
       "name": "blockAddress",
-      "discriminator": [199, 140, 68, 34, 1, 27, 188, 74],
+      "discriminator": [
+        199,
+        140,
+        68,
+        34,
+        1,
+        27,
+        188,
+        74
+      ],
       "accounts": [
-        { "name": "admin", "writable": true, "signer": true },
-        { "name": "config" },
-        { "name": "kycStatus", "writable": true }
+        {
+          "name": "admin",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "config"
+        },
+        {
+          "name": "kycStatus",
+          "writable": true
+        }
       ],
       "args": [
-        { "name": "wallet", "type": "pubkey" }
+        {
+          "name": "wallet",
+          "type": "pubkey"
+        }
       ]
     },
     {
       "name": "recordTravelRule",
-      "discriminator": [95, 165, 201, 12, 181, 67, 42, 121],
+      "discriminator": [
+        95,
+        165,
+        201,
+        12,
+        181,
+        67,
+        42,
+        121
+      ],
       "accounts": [
-        { "name": "admin", "writable": true, "signer": true },
-        { "name": "config" },
-        { "name": "travelRule", "writable": true },
-        { "name": "systemProgram", "address": "11111111111111111111111111111111" }
+        {
+          "name": "admin",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "config"
+        },
+        {
+          "name": "travelRule",
+          "writable": true
+        },
+        {
+          "name": "systemProgram",
+          "address": "11111111111111111111111111111111"
+        }
       ],
       "args": [
-        { "name": "dealId", "type": "u64" },
-        { "name": "originatorNameHash", "type": { "array": ["u8", 32] } },
-        { "name": "beneficiaryNameHash", "type": { "array": ["u8", 32] } },
-        { "name": "originatorInstitution", "type": { "array": ["u8", 32] } }
+        {
+          "name": "dealId",
+          "type": "u64"
+        },
+        {
+          "name": "originatorNameHash",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        },
+        {
+          "name": "beneficiaryNameHash",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        },
+        {
+          "name": "originatorInstitution",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        }
       ]
     }
   ],
   "accounts": [
     {
       "name": "kycAdminConfig",
-      "discriminator": [247, 214, 28, 37, 252, 12, 179, 101]
+      "discriminator": [
+        247,
+        214,
+        28,
+        37,
+        252,
+        12,
+        179,
+        101
+      ]
     },
     {
       "name": "kycStatus",
-      "discriminator": [73, 47, 181, 201, 173, 209, 72, 7]
+      "discriminator": [
+        73,
+        47,
+        181,
+        201,
+        173,
+        209,
+        72,
+        7
+      ]
     },
     {
       "name": "travelRuleRecord",
-      "discriminator": [2, 179, 102, 25, 10, 202, 48, 152]
+      "discriminator": [
+        2,
+        179,
+        102,
+        25,
+        10,
+        202,
+        48,
+        152
+      ]
     }
   ],
   "events": [],
   "errors": [
-    { "code": 6000, "name": "senderKycNotVerified", "msg": "Sender KYC verification required" },
-    { "code": 6001, "name": "senderBlocked", "msg": "Sender is on AML blocklist" },
-    { "code": 6002, "name": "senderKycExpired", "msg": "Sender KYC has expired" },
-    { "code": 6003, "name": "receiverKycNotVerified", "msg": "Receiver KYC verification required" },
-    { "code": 6004, "name": "receiverBlocked", "msg": "Receiver is on AML blocklist" },
-    { "code": 6005, "name": "receiverKycExpired", "msg": "Receiver KYC has expired" },
-    { "code": 6006, "name": "adminOnly", "msg": "Only admin can perform this action" },
-    { "code": 6007, "name": "invalidKycLevel", "msg": "Invalid KYC level (must be 0-3)" },
-    { "code": 6008, "name": "invalidExpiryDate", "msg": "Expiry date must be in the future" }
+    {
+      "code": 6000,
+      "name": "senderKycNotVerified",
+      "msg": "Sender KYC verification required"
+    },
+    {
+      "code": 6001,
+      "name": "senderBlocked",
+      "msg": "Sender is on AML blocklist"
+    },
+    {
+      "code": 6002,
+      "name": "senderKycExpired",
+      "msg": "Sender KYC has expired"
+    },
+    {
+      "code": 6003,
+      "name": "receiverKycNotVerified",
+      "msg": "Receiver KYC verification required"
+    },
+    {
+      "code": 6004,
+      "name": "receiverBlocked",
+      "msg": "Receiver is on AML blocklist"
+    },
+    {
+      "code": 6005,
+      "name": "receiverKycExpired",
+      "msg": "Receiver KYC has expired"
+    },
+    {
+      "code": 6006,
+      "name": "adminOnly",
+      "msg": "Only admin can perform this action"
+    },
+    {
+      "code": 6007,
+      "name": "invalidKycLevel",
+      "msg": "Invalid KYC level (must be 0-3)"
+    },
+    {
+      "code": 6008,
+      "name": "invalidExpiryDate",
+      "msg": "Expiry date must be in the future"
+    }
   ],
   "types": [
     {
@@ -120,8 +374,14 @@
       "type": {
         "kind": "struct",
         "fields": [
-          { "name": "admin", "type": "pubkey" },
-          { "name": "bump", "type": "u8" }
+          {
+            "name": "admin",
+            "type": "pubkey"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
         ]
       }
     },
@@ -130,14 +390,43 @@
       "type": {
         "kind": "struct",
         "fields": [
-          { "name": "wallet", "type": "pubkey" },
-          { "name": "verified", "type": "bool" },
-          { "name": "kycLevel", "type": "u8" },
-          { "name": "countryCode", "type": { "array": ["u8", 2] } },
-          { "name": "verifiedAt", "type": "i64" },
-          { "name": "expiresAt", "type": "i64" },
-          { "name": "isBlocked", "type": "bool" },
-          { "name": "bump", "type": "u8" }
+          {
+            "name": "wallet",
+            "type": "pubkey"
+          },
+          {
+            "name": "verified",
+            "type": "bool"
+          },
+          {
+            "name": "kycLevel",
+            "type": "u8"
+          },
+          {
+            "name": "countryCode",
+            "type": {
+              "array": [
+                "u8",
+                2
+              ]
+            }
+          },
+          {
+            "name": "verifiedAt",
+            "type": "i64"
+          },
+          {
+            "name": "expiresAt",
+            "type": "i64"
+          },
+          {
+            "name": "isBlocked",
+            "type": "bool"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
         ]
       }
     },
@@ -146,13 +435,49 @@
       "type": {
         "kind": "struct",
         "fields": [
-          { "name": "dealId", "type": "u64" },
-          { "name": "originatorNameHash", "type": { "array": ["u8", 32] } },
-          { "name": "beneficiaryNameHash", "type": { "array": ["u8", 32] } },
-          { "name": "originatorInstitution", "type": { "array": ["u8", 32] } },
-          { "name": "amountThresholdMet", "type": "bool" },
-          { "name": "createdAt", "type": "i64" },
-          { "name": "bump", "type": "u8" }
+          {
+            "name": "dealId",
+            "type": "u64"
+          },
+          {
+            "name": "originatorNameHash",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "beneficiaryNameHash",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "originatorInstitution",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "amountThresholdMet",
+            "type": "bool"
+          },
+          {
+            "name": "createdAt",
+            "type": "i64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
         ]
       }
     }
