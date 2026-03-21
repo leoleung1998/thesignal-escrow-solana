@@ -1,12 +1,13 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
-import { NodeGlobalsPolyfillPlugin } from '@esbuild-plugins/polyfill-node'
+import inject from '@rollup/plugin-inject'
 
 export default defineConfig({
   plugins: [
     tailwindcss(),
-    react()
+    react(),
+    inject({ Buffer: ['buffer', 'Buffer'], exclude: ['**/*.cjs'] }),
   ],
   define: {
     global: 'globalThis',
