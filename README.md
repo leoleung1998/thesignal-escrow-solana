@@ -2,7 +2,7 @@
 
 > **StableHacks 2026** · Track 3: Programmable Stablecoin Payments · Built on Solana with Token-2022
 
-**Live Demo**: https://thesignal-escrow.vercel.app · **Network**: Localnet (devnet deploy ready)
+**Live Demo**: https://thesignal-escrow.vercel.app · **Network**: Solana Devnet
 
 ---
 
@@ -56,13 +56,14 @@ On-chain hashed metadata for deals exceeding $3,000, referencing originator and 
 
 ## Demo Flow
 
-> Connect Phantom wallet on **Localnet** (`http://localhost:8899`) or use the built-in social login (Privy).
+> Connect any Solana wallet (Phantom, Solflare) on **Devnet** or use the built-in social login (Privy). No setup needed — the faucet handles everything.
 
 **Step 1 — Get Test Tokens**
 Navigate to **Compliance** → **Test Token Faucet** → click **Get 10,000 vUSDC**
-- Airdrops 1 SOL (for tx fees)
+- Airdrops 1 devnet SOL to your wallet (for tx fees)
 - Mints 10,000 vUSDC to your wallet
 - Registers your KYC on-chain automatically
+- Works for brand new wallets with 0 SOL — admin pays setup fees
 
 **Step 2 — Create a Deal**
 Navigate to **Deploy Contract** → fill in provider address, milestones, fee structure → **Review Payload** → **Deploy**
@@ -131,17 +132,17 @@ In **Compliance** → **AML Blocklist Demo**:
 | KYC Enforcement | Custom Transfer Hook program with ExtraAccountMeta |
 | Frontend | React 19 + Vite + Tailwind CSS v4 |
 | Auth / Wallets | Privy v3 (email/social) + Phantom / Solflare |
-| Deployment | Vercel (frontend) · Solana localnet / devnet |
+| Deployment | Vercel (frontend) · Solana Devnet |
 
 ---
 
-## Program IDs (Localnet)
+## Program IDs (Devnet)
 
 | Program | Address |
 |---------|---------|
 | `signal-escrow` | `Cv9qz4mN9kXAoLgNXpiZ1kuzhgXvcZabYSbYjgLQSrWg` |
 | `signal-kyc-hook` | `FNsAAZABER8g8QUdJsfhMLck3JzNRmBHomozRiiwCM2B` |
-| `vUSDC Mint` | `BGjrVtVpSqYwRGNiJq3ARyN8q4T7EmAwMgL3YPfaYFqV` |
+| `vUSDC Mint` | `26SZbMQoByiyUGHwMTTeyAQABghUpX4PUp84JevokZtB` |
 
 ---
 
@@ -185,27 +186,8 @@ In production, this would use a Token-2022 stablecoin from a licensed issuer (EU
 - [Anchor CLI](https://www.anchor-lang.com/docs/installation) 0.30.1
 - Node.js 20+
 
-### Run Locally
+### Run the Frontend Locally (against Devnet)
 
-**Terminal 1 — Local validator**
-```bash
-solana-test-validator --reset
-```
-
-**Terminal 2 — Build, deploy, setup**
-```bash
-# Build programs
-cargo build-sbf --manifest-path programs/signal-escrow/Cargo.toml
-cargo build-sbf --manifest-path programs/signal-kyc-hook/Cargo.toml
-
-solana config set --url localhost
-anchor deploy
-
-# Deploy vUSDC mint + initialize programs
-ANCHOR_PROVIDER_URL=http://localhost:8899 ANCHOR_WALLET=~/.config/solana/id.json npm run setup
-```
-
-**Terminal 3 — Frontend**
 ```bash
 cd frontend
 npm install
@@ -213,16 +195,32 @@ npm run dev
 # → http://localhost:5173
 ```
 
-### Environment Variables (`frontend/.env`)
+Create `frontend/.env`:
 
 ```env
 VITE_ESCROW_PROGRAM_ID=Cv9qz4mN9kXAoLgNXpiZ1kuzhgXvcZabYSbYjgLQSrWg
 VITE_KYC_HOOK_PROGRAM_ID=FNsAAZABER8g8QUdJsfhMLck3JzNRmBHomozRiiwCM2B
-VITE_VUSDC_MINT=BGjrVtVpSqYwRGNiJq3ARyN8q4T7EmAwMgL3YPfaYFqV
-VITE_SOLANA_RPC_URL=http://localhost:8899
-VITE_SOLANA_NETWORK=localnet
+VITE_VUSDC_MINT=26SZbMQoByiyUGHwMTTeyAQABghUpX4PUp84JevokZtB
+VITE_SOLANA_RPC_URL=https://api.devnet.solana.com
+VITE_SOLANA_NETWORK=devnet
 VITE_PRIVY_APP_ID=your_privy_app_id
 VITE_DEMO_ADMIN_KEYPAIR=base64_encoded_admin_keypair
+```
+
+### Redeploy Programs (if needed)
+
+```bash
+# Build
+cargo build-sbf --manifest-path programs/signal-escrow/Cargo.toml
+cargo build-sbf --manifest-path programs/signal-kyc-hook/Cargo.toml
+
+# Deploy to devnet
+solana config set --url devnet
+solana program deploy target/deploy/signal_kyc_hook.so --program-id target/deploy/signal_kyc_hook-keypair.json --keypair ~/.config/solana/id.json
+solana program deploy target/deploy/signal_escrow.so --program-id target/deploy/signal_escrow-keypair.json --keypair ~/.config/solana/id.json
+
+# Initialize on-chain state
+ANCHOR_PROVIDER_URL=https://api.devnet.solana.com ANCHOR_WALLET=~/.config/solana/id.json npx ts-node scripts/finish-devnet-setup.ts
 ```
 
 ---
