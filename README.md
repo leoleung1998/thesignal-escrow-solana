@@ -2,7 +2,7 @@
 
 > **StableHacks 2026** · Track 3: Programmable Stablecoin Payments · Built on Solana with Token-2022
 
-**Live Demo**: https://thesignal-escrow.vercel.app · **Network**: Solana Devnet
+**Live Demo**: https://solana.thesignal.directory/ · **Network**: Solana Devnet
 
 ---
 
