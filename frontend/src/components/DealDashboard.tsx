@@ -149,12 +149,17 @@ export function DealDashboard({
     }
   }, [getDeal, getDealCount]);
 
-  useEffect(() => {
-    if (walletAddress) fetchAllDeals();
-  }, [walletAddress]);
-
   const fetchRef = useRef(fetchAllDeals);
   fetchRef.current = fetchAllDeals;
+
+  // Re-fetch and clear search when wallet changes
+  useEffect(() => {
+    if (walletAddress) {
+      setSearchQuery('');
+      fetchRef.current();
+    }
+  }, [walletAddress]);
+
   useEffect(() => {
     const interval = setInterval(() => fetchRef.current(), 30000);
     return () => clearInterval(interval);
@@ -164,7 +169,7 @@ export function DealDashboard({
     if (initialDealId !== null && initialDealId !== undefined) {
       setSelectedDealId(initialDealId);
       setMobileShowDetail(true);
-      fetchAllDeals();
+      fetchRef.current();
     }
   }, [initialDealId]);
 
