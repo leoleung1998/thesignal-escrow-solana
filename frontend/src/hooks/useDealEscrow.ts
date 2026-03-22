@@ -2,15 +2,44 @@ import { useCallback, useState } from 'react';
 import { useConnection } from '@solana/wallet-adapter-react';
 import { useUnifiedAnchorWallet } from '../components/UnifiedWalletProvider';
 import { Program, AnchorProvider, BN } from '@coral-xyz/anchor';
-import { PublicKey, SystemProgram } from '@solana/web3.js';
+import { Keypair, PublicKey, SystemProgram } from '@solana/web3.js';
 import { TOKEN_2022_PROGRAM_ID, getAssociatedTokenAddressSync } from '@solana/spl-token';
 import {
   VUSDC_MINT,
+  KYC_HOOK_PROGRAM_ID,
   getConfigPDA,
   getDealPDA,
   getVaultPDA,
   getReputationPDA,
+  getKycPDA,
+  getKycAdminPDA,
 } from '../lib/solana';
+import kycIdl from '../idl/signal_kyc_hook.json';
+
+function getAdminKeypair(): Keypair | null {
+  const b64 = import.meta.env.VITE_DEMO_ADMIN_KEYPAIR;
+  if (!b64) return null;
+  try { return Keypair.fromSecretKey(Buffer.from(b64, 'base64')); } catch { return null; }
+}
+
+function getTransferHookAccounts(
+  mint: PublicKey,
+  senderOwner: PublicKey,
+  receiverOwner: PublicKey,
+) {
+  const [extraAccountMetaList] = PublicKey.findProgramAddressSync(
+    [Buffer.from('extra-account-metas'), mint.toBuffer()],
+    KYC_HOOK_PROGRAM_ID
+  );
+  const [senderKyc] = getKycPDA(senderOwner);
+  const [receiverKyc] = getKycPDA(receiverOwner);
+  return [
+    { pubkey: KYC_HOOK_PROGRAM_ID, isWritable: false, isSigner: false },
+    { pubkey: extraAccountMetaList, isWritable: false, isSigner: false },
+    { pubkey: senderKyc, isWritable: false, isSigner: false },
+    { pubkey: receiverKyc, isWritable: false, isSigner: false },
+  ];
+}
 
 // IDL loaded from generated JSON (placeholder until anchor build)
 import idl from '../idl/signal_escrow.json';
@@ -64,6 +93,29 @@ export function useDealEscrow() {
     });
     return new Program(idl as any, provider);
   }, [wallet, connection]);
+
+  // Register KYC for a PDA using embedded admin keypair (demo only)
+  const ensureKycRegistered = useCallback(async (target: PublicKey) => {
+    const adminKeypair = getAdminKeypair();
+    if (!adminKeypair) return;
+    const [kycPDA] = getKycPDA(target);
+    try {
+      const provider = new AnchorProvider(connection, wallet!, { commitment: 'confirmed' });
+      const kycProgram = new Program(kycIdl as any, provider);
+      await kycProgram.account.kycStatus.fetch(kycPDA);
+    } catch {
+      // Not registered — register now
+      const provider = new AnchorProvider(connection, wallet!, { commitment: 'confirmed' });
+      const kycProgram = new Program(kycIdl as any, provider);
+      const [configPDA] = getKycAdminPDA();
+      const oneYear = Math.floor(Date.now() / 1000) + 365 * 24 * 60 * 60;
+      await kycProgram.methods
+        .registerKyc(target, 2, Buffer.from('US'), new BN(oneYear))
+        .accounts({ admin: adminKeypair.publicKey, config: configPDA, kycStatus: kycPDA, systemProgram: SystemProgram.programId })
+        .signers([adminKeypair])
+        .rpc();
+    }
+  }, [connection, wallet]);
 
   // --- Read Methods ---
 
@@ -175,6 +227,9 @@ export function useDealEscrow() {
         TOKEN_2022_PROGRAM_ID
       );
 
+      // Ensure vault PDA has KYC (it receives the deposit)
+      await ensureKycRegistered(vaultPDA);
+
       const txHash = await program.methods
         .deposit(new BN(dealId), milestoneIdx)
         .accounts({
@@ -185,13 +240,14 @@ export function useDealEscrow() {
           tokenMint: VUSDC_MINT,
           tokenProgram: TOKEN_2022_PROGRAM_ID,
         })
+        .remainingAccounts(getTransferHookAccounts(VUSDC_MINT, wallet!.publicKey, vaultPDA))
         .rpc();
 
       return { txHash };
     } finally {
       setIsProcessing(false);
     }
-  }, [getProgram, wallet]);
+  }, [getProgram, wallet, ensureKycRegistered]);
 
   const releaseMilestone = useCallback(async (
     dealId: number,
@@ -207,15 +263,29 @@ export function useDealEscrow() {
       const [vaultPDA] = getVaultPDA(dealId);
       const [reputationPDA] = getReputationPDA(new PublicKey(providerAddr));
 
-      const providerAta = getAssociatedTokenAddressSync(
-        VUSDC_MINT, new PublicKey(providerAddr), false, TOKEN_2022_PROGRAM_ID
+      const providerPubkey = new PublicKey(providerAddr);
+      const connectorPubkey = new PublicKey(connectorAddr);
+      const protocolPubkey = new PublicKey(protocolWalletAddr);
+
+      const providerAta = getAssociatedTokenAddressSync(VUSDC_MINT, providerPubkey, false, TOKEN_2022_PROGRAM_ID);
+      const connectorAta = getAssociatedTokenAddressSync(VUSDC_MINT, connectorPubkey, false, TOKEN_2022_PROGRAM_ID);
+      const protocolAta = getAssociatedTokenAddressSync(VUSDC_MINT, protocolPubkey, false, TOKEN_2022_PROGRAM_ID);
+
+      // Ensure all receivers have KYC + vault (sender)
+      await ensureKycRegistered(vaultPDA);
+      await ensureKycRegistered(providerPubkey);
+      await ensureKycRegistered(connectorPubkey);
+      await ensureKycRegistered(protocolPubkey);
+
+      // Build remaining accounts for all 3 transfer hook invocations
+      const [extraAccountMetaList] = PublicKey.findProgramAddressSync(
+        [Buffer.from('extra-account-metas'), VUSDC_MINT.toBuffer()],
+        KYC_HOOK_PROGRAM_ID
       );
-      const connectorAta = getAssociatedTokenAddressSync(
-        VUSDC_MINT, new PublicKey(connectorAddr), false, TOKEN_2022_PROGRAM_ID
-      );
-      const protocolAta = getAssociatedTokenAddressSync(
-        VUSDC_MINT, new PublicKey(protocolWalletAddr), false, TOKEN_2022_PROGRAM_ID
-      );
+      const [vaultKyc] = getKycPDA(vaultPDA);
+      const [providerKyc] = getKycPDA(providerPubkey);
+      const [connectorKyc] = getKycPDA(connectorPubkey);
+      const [protocolKyc] = getKycPDA(protocolPubkey);
 
       const txHash = await program.methods
         .releaseMilestone(new BN(dealId), milestoneIdx)
@@ -231,13 +301,21 @@ export function useDealEscrow() {
           reputation: reputationPDA,
           systemProgram: SystemProgram.programId,
         })
+        .remainingAccounts([
+          { pubkey: KYC_HOOK_PROGRAM_ID, isWritable: false, isSigner: false },
+          { pubkey: extraAccountMetaList, isWritable: false, isSigner: false },
+          { pubkey: vaultKyc, isWritable: false, isSigner: false },
+          { pubkey: providerKyc, isWritable: false, isSigner: false },
+          { pubkey: connectorKyc, isWritable: false, isSigner: false },
+          { pubkey: protocolKyc, isWritable: false, isSigner: false },
+        ])
         .rpc();
 
       return { txHash };
     } finally {
       setIsProcessing(false);
     }
-  }, [getProgram, wallet]);
+  }, [getProgram, wallet, ensureKycRegistered]);
 
   const dispute = useCallback(async (
     dealId: number,

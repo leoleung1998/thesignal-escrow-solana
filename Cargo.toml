@@ -12,6 +12,7 @@ proc-macro2 = { version = "1.0", features = ["span-locations"] }
 overflow-checks = true
 lto = "fat"
 codegen-units = 1
+opt-level = "z"
 [profile.release.build-override]
 opt-level = 3
 incremental = false
