@@ -742,6 +742,9 @@ export function DealDashboard({
                                     <span className="shrink-0">&#9878;</span>
                                     <span>Under review — Admin resolves on-chain</span>
                                   </div>
+                                  <p className="text-[10px] text-zinc-600 text-center px-2">
+                                    Admin action — enforced by program constraint
+                                  </p>
                                   <Button
                                     variant="secondary"
                                     onClick={async () => {
@@ -763,7 +766,7 @@ export function DealDashboard({
                                     disabled={!!actionLoading}
                                     className="text-xs py-1.5 px-3 w-full"
                                   >
-                                    {actionLoading === `resolve-${i}` ? 'Signing...' : 'Accept & Release to Provider'}
+                                    {actionLoading === `resolve-${i}` ? 'Signing...' : '⚖️ Accept & Release to Provider'}
                                   </Button>
                                   <Button
                                     variant="secondary"
@@ -786,7 +789,7 @@ export function DealDashboard({
                                     disabled={!!actionLoading}
                                     className="text-xs py-1.5 px-3 w-full text-red-400 border-red-500/20"
                                   >
-                                    {actionLoading === `refund-${i}` ? 'Signing...' : 'Refund to Client'}
+                                    {actionLoading === `refund-${i}` ? 'Signing...' : '↩️ Refund to Client'}
                                   </Button>
                                 </div>
                               )}
