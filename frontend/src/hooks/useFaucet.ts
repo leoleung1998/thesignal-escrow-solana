@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react';
 import { useConnection } from '@solana/wallet-adapter-react';
 import { useUnifiedAnchorWallet } from '../components/UnifiedWalletProvider';
-import { Keypair, PublicKey, SystemProgram, LAMPORTS_PER_SOL } from '@solana/web3.js';
+import { Keypair, PublicKey, SystemProgram, LAMPORTS_PER_SOL, Transaction, sendAndConfirmTransaction } from '@solana/web3.js';
 import { AnchorProvider, Program, BN } from '@coral-xyz/anchor';
 import {
   TOKEN_2022_PROGRAM_ID,
@@ -31,11 +31,28 @@ export function useFaucet() {
     try {
       const AMOUNT = 10_000 * 1_000_000; // 10,000 vUSDC
 
-      // 0. Airdrop SOL if wallet has less than 0.1 SOL (needed for tx fees)
+      // 0. Ensure user wallet has SOL for tx fees
+      // Try devnet airdrop first; if rate-limited, fall back to admin transfer
       const balance = await connection.getBalance(wallet.publicKey);
       if (balance < 0.1 * LAMPORTS_PER_SOL) {
-        const sig = await connection.requestAirdrop(wallet.publicKey, LAMPORTS_PER_SOL);
-        await connection.confirmTransaction(sig, 'confirmed');
+        let funded = false;
+        try {
+          const sig = await connection.requestAirdrop(wallet.publicKey, LAMPORTS_PER_SOL);
+          await connection.confirmTransaction(sig, 'confirmed');
+          funded = true;
+        } catch {
+          // Devnet airdrop rate-limited — send SOL from admin instead
+        }
+        if (!funded) {
+          const transferTx = new Transaction().add(
+            SystemProgram.transfer({
+              fromPubkey: adminKeypair.publicKey,
+              toPubkey: wallet.publicKey,
+              lamports: 0.1 * LAMPORTS_PER_SOL,
+            })
+          );
+          await sendAndConfirmTransaction(connection, transferTx, [adminKeypair]);
+        }
       }
 
       // 1. Create ATA for user if needed, then mint vUSDC
